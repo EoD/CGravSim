@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8.00"
 	Name="Gravity_Simulation_Backend"
 	ProjectGUID="{C808973C-EE73-41F0-9AE5-6A4E50F9CAD2}"
 	RootNamespace="Gravity_Simulation_Backend"

@@ -8,7 +8,7 @@
 
 
 #define BVERSION 0.9
-#define FVERSION 1.26
+#define FVERSION 1.8
 #define null NULL
 
 #define FLAG_DEBUG1 "--version"

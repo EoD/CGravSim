@@ -16,7 +16,6 @@ INCLUDES = -I$(DIR_INC)
 #LIBARIES = -lsmpeg -lpthread -lid3
 #OPTFLAGS = -march=athlon-xp -mtune=athlon-xp 
 OPTFLAGS =
-#"opteron" for K8 64bit cpu's
 
 SRC_FILES := $(wildcard $(DIR_SRC)*.cpp)
 OBJ_FILES_TMP := $(SRC_FILES:%.cpp=%.o)
@@ -25,14 +24,14 @@ DEP_FILES := $(DEP_FILES_TMP:$(DIR_SRC)%=$(DIR_DEP)%)
 SRC_FILES_NOEXT := $(notdir $(basename $(SRC_FILES)))
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
-#No optimization! Enable highest debuglevel, profiling, and display every single warning
+#Enable highest debuglevel, profiling, and display every single warning
 Releasename=debug
-CFLAGS = -O0 -g3 -Wall -D_DEBUG32
+CFLAGS = -O2 -g3 -Wall -D_DEBUG32
 OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJDEBUG)%)
 else
 #turn on some optimization
 Releasename=release
-CFLAGS = -O3 -g -Wall
+CFLAGS = -O2 -g -Wall
 OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJRELEASE)%)
 endif
 
@@ -83,6 +82,9 @@ clean:
 	mkdir -p $(DIR_TMP)
 	-rm -rf gmon.out core *.tar.gz
 	@echo "Cleanup done"
+	mkdir -p $(DIR_DEP)
+	mkdir -p $(DIR_OBJDEBUG)
+	mkdir -p $(DIR_OBJRELEASE)
 
 stats:
 	@echo "Stats of Sourcefiles"

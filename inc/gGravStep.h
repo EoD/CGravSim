@@ -3,7 +3,7 @@
 
 #include <vector>
 //#include <iostream>
-//#include <string>
+#include <string>
 //#include <sstream>
 //#include <fstream>
 #include "gGravObject.h"

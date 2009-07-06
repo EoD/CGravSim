@@ -14,6 +14,9 @@
 #define FLAG_DEBUG1 "--version"
 #define FLAG_DEBUG2 "-v"
 
+#define FLAG_HELP1 "--help"
+#define FLAG_HELP2 "-h"
+
 #define DATAPRECISION 20
 #define DELIMDATA ";"
 

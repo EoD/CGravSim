@@ -34,7 +34,7 @@ int main(int argc, char* pArgs[]) {
 	GravDataSet* pgdsStart = new GravDataSet();
 
 	if (argc > 1) {
-		if(strcmp(pArgs[1], FLAG_DEBUG1) || strcmp(pArgs[1], FLAG_DEBUG2)) {
+		if( (std::string)pArgs[1] == FLAG_DEBUG1 || (std::string)pArgs[1] == FLAG_DEBUG2) {
 			std::cout << "Frontend:" << FVERSION << "\n";
 			std::cout << "Backend :" << BVERSION << "\n";
 #ifdef DEBUG
@@ -42,6 +42,16 @@ int main(int argc, char* pArgs[]) {
 #endif
 			return 0;
 		} 
+		else if( (std::string)pArgs[1] == FLAG_HELP1 || (std::string)pArgs[1] == FLAG_HELP2) {
+			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << "\n";
+			std::cout << "USAGE: jgravsim [FILENAME]" << "\n";
+			std::cout << "\t FILENAME has to be in the current WPT (v" << FVERSION << ") format" << "\n";
+			std::cout << "\nVersion :" << BVERSION << "\n";
+#ifdef DEBUG
+			std::cout <<   "Debug   :" << DEBUG << "\n";
+#endif
+			return 0;
+		}
 		else {
 			debugout("Filename has been specified", 10);
 			filename = pArgs[1];

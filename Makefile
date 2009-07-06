@@ -8,8 +8,8 @@ DIR_EXE = exe/
 DIR_DEP = dep/
 DIR_TMP = tmp/
 
-CC     = g++
-LD     = g++
+CC     = ${CROSS_COMPILE}g++
+LD     = ${CROSS_COMPILE}g++
 DBG_PROG=xxgdb
 
 INCLUDES = -I$(DIR_INC)

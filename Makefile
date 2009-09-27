@@ -1,4 +1,10 @@
-RELEASE=false
+ifndef RELEASE
+RELEASE=true
+endif
+
+ifndef ARCH
+ ARCH=x86
+endif
 
 DIR_SRC = src/
 DIR_INC = inc/
@@ -10,12 +16,10 @@ DIR_TMP = tmp/
 
 CC     = ${CROSS_COMPILE}g++
 LD     = ${CROSS_COMPILE}g++
-DBG_PROG=xxgdb
+DBG_PROG=gdb
 
 INCLUDES = -I$(DIR_INC)
-#LIBARIES = -lsmpeg -lpthread -lid3
-#OPTFLAGS = -march=athlon-xp -mtune=athlon-xp 
-OPTFLAGS =
+OPTFLAGS = -mtune=generic
 
 SRC_FILES := $(wildcard $(DIR_SRC)*.cpp)
 OBJ_FILES_TMP := $(SRC_FILES:%.cpp=%.o)
@@ -25,18 +29,34 @@ SRC_FILES_NOEXT := $(notdir $(basename $(SRC_FILES)))
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
 #Enable highest debuglevel, profiling, and display every single warning
-Releasename=debug
+Releasename=dbg
 CFLAGS = -O2 -g3 -Wall -D_DEBUG32
 OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJDEBUG)%)
 else
 #turn on some optimization
-Releasename=release
+Releasename=
 CFLAGS = -O2 -g -Wall
 OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJRELEASE)%)
 endif
 
+ifeq ($(ARCH),x86)
+CFLAGS += -m32
+endif
+
+ifeq ($(ARCH),amd64)
+CFLAGS += -m64
+endif
+
+ifeq ($(ARCH),sparc)
+CFLAGS += -m32
+endif
+
+ifeq ($(ARCH),sparc64)
+CFLAGS += -m64
+endif
+
 #Name of the executable:
-EXE_NAME = gravitysim_$(Releasename)
+EXE_NAME = cgravsim$(Releasename)_${ARCH}
 
 LDFLAGS  = $(CFLAGS) $(INCLUDES) $(LIBARIES) $(OPTFLAGS)
 
@@ -46,12 +66,12 @@ all: $(DEP_FILES) $(OBJ_FILES)
 	@echo "Done!"
 
 $(DIR_OBJDEBUG)%.o : $(DIR_SRC)%.cpp
-	@echo "# Compiling $<"
+	@echo "# Compiling for ${ARCH} $<"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 
 	@echo ""
 
 $(DIR_OBJRELEASE)%.o : $(DIR_SRC)%.cpp
-	@echo "# Compiling $<"
+	@echo "# Compiling for ${ARCH} $<"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 
 	@echo ""
 
@@ -67,6 +87,26 @@ run: all
 rundebug: all
 	@echo "Executing $(DBG_PROG) $(DIR_EXE)$(EXE_NAME)" 
 	$(DBG_PROG) $(DIR_EXE)$(EXE_NAME)
+
+allarch:
+	make cleanarch
+	RELEASE=false ARCH=amd64 make
+	RELEASE=true ARCH=amd64 make
+	make cleanarch
+	RELEASE=false ARCH=x86 make
+	RELEASE=true ARCH=x86 make
+
+cleanarch:
+	@echo "Doing only some architecture cleanup..."
+	-rm -f $(DIR_OBJDEBUG)*
+	-rm -f $(DIR_OBJRELEASE)*
+	-rm -f $(DIR_DEP)*
+	-rm -f $(DIR_TMP)*
+	mkdir -p $(DIR_OBJDEBUG)
+	mkdir -p $(DIR_OBJRELEASE)
+	mkdir -p $(DIR_DEP)
+	mkdir -p $(DIR_TMP)
+	@echo "Cleanup done"
 
 clean:
 	@echo "Doing some cleanup..."

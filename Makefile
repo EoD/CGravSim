@@ -88,13 +88,21 @@ rundebug: all
 	@echo "Executing $(DBG_PROG) $(DIR_EXE)$(EXE_NAME)" 
 	$(DBG_PROG) $(DIR_EXE)$(EXE_NAME)
 
-allarch:
+arch_x86:
 	make cleanarch
 	RELEASE=false ARCH=amd64 make
 	RELEASE=true ARCH=amd64 make
 	make cleanarch
 	RELEASE=false ARCH=x86 make
 	RELEASE=true ARCH=x86 make
+
+arch_sparc:
+	make cleanarch
+	RELEASE=false ARCH=sparc64 make
+	RELEASE=true ARCH=sparc64 make
+	make cleanarch
+	RELEASE=false ARCH=sparc make
+	RELEASE=true ARCH=sparc make
 
 cleanarch:
 	@echo "Doing only some architecture cleanup..."

@@ -1,5 +1,5 @@
 ifndef RELEASE
-RELEASE=true
+ RELEASE=true
 endif
 
 ifndef ARCH
@@ -8,36 +8,40 @@ endif
 
 DIR_SRC = src/
 DIR_INC = inc/
-DIR_OBJDEBUG = obj_d/
-DIR_OBJRELEASE = obj_r/
 DIR_EXE = exe/
 DIR_DEP = dep/
 DIR_TMP = tmp/
 
 CC     = ${CROSS_COMPILE}g++
 LD     = ${CROSS_COMPILE}g++
-DBG_PROG=gdb
+DBG_PROG = gdb --ex run --args
+MKDIR	= mkdir -p
+RM	= rm -f
 
 INCLUDES = -I$(DIR_INC)
 OPTFLAGS = -mtune=generic
+
+ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
+#Enable highest debuglevel, profiling, and display every single warning
+Releasename=dbg
+CFLAGS = -O2 -g3 -Wall -D_DEBUG32
+DIR_OBJ = obj_d/
+else
+#turn on some optimization
+Releasename=
+CFLAGS = -O2 -g -Wall
+DIR_OBJ = obj_r/
+endif
+
+#Name of the executable:
+EXE_NAME = cgravsim$(Releasename)_${ARCH}
 
 SRC_FILES := $(wildcard $(DIR_SRC)*.cpp)
 OBJ_FILES_TMP := $(SRC_FILES:%.cpp=%.o)
 DEP_FILES_TMP := $(SRC_FILES:%.cpp=%.d)
 DEP_FILES := $(DEP_FILES_TMP:$(DIR_SRC)%=$(DIR_DEP)%)
 SRC_FILES_NOEXT := $(notdir $(basename $(SRC_FILES)))
-
-ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
-#Enable highest debuglevel, profiling, and display every single warning
-Releasename=dbg
-CFLAGS = -O2 -g3 -Wall -D_DEBUG32
-OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJDEBUG)%)
-else
-#turn on some optimization
-Releasename=
-CFLAGS = -O2 -g -Wall
-OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJRELEASE)%)
-endif
+OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJ)%)
 
 ifeq ($(ARCH),x86)
 CFLAGS += -m32
@@ -55,22 +59,15 @@ ifeq ($(ARCH),sparc64)
 CFLAGS += -m64
 endif
 
-#Name of the executable:
-EXE_NAME = cgravsim$(Releasename)_${ARCH}
-
 LDFLAGS  = $(CFLAGS) $(INCLUDES) $(LIBARIES) $(OPTFLAGS)
 
 all: $(DEP_FILES) $(OBJ_FILES)
 	@echo "# Linking to $(DIR_EXE)$(EXE_NAME)"
 	$(LD) $(LDFLAGS) -o $(DIR_EXE)$(EXE_NAME) $(OBJ_FILES)
 	@echo "Done!"
-
-$(DIR_OBJDEBUG)%.o : $(DIR_SRC)%.cpp
-	@echo "# Compiling for ${ARCH} $<"
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 
 	@echo ""
 
-$(DIR_OBJRELEASE)%.o : $(DIR_SRC)%.cpp
+$(DIR_OBJ)%.o : $(DIR_SRC)%.cpp
 	@echo "# Compiling for ${ARCH} $<"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 
 	@echo ""
@@ -78,7 +75,7 @@ $(DIR_OBJRELEASE)%.o : $(DIR_SRC)%.cpp
 #Automatic dependency generation and update
 $(DIR_DEP)%.d : $(DIR_SRC)%.cpp 
 	@echo "Update dependencies for $<"
-	@$(CC) -MM $< $(INCLUDES) -MT obj/$(basename $(notdir $<)).o > $@
+	@$(CC) -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o > $@
 
 run: all
 	@echo "Executing $(DIR_EXE)$(EXE_NAME)"
@@ -89,7 +86,6 @@ rundebug: all
 	$(DBG_PROG) $(DIR_EXE)$(EXE_NAME)
 
 arch_x86:
-	make cleanarch
 	RELEASE=false ARCH=amd64 make
 	RELEASE=true ARCH=amd64 make
 	make cleanarch
@@ -97,66 +93,69 @@ arch_x86:
 	RELEASE=true ARCH=x86 make
 
 arch_sparc:
-	make cleanarch
-	RELEASE=false ARCH=sparc64 make
-	RELEASE=true ARCH=sparc64 make
-	make cleanarch
-	RELEASE=false ARCH=sparc make
-	RELEASE=true ARCH=sparc make
+	RELEASE=false ARCH=sparc64 make cleanarch
+	RELEASE=true ARCH=sparc64 make cleanarch
+	RELEASE=false ARCH=sparc make cleanarch
+	RELEASE=true ARCH=sparc make cleanarch
 
 cleanarch:
 	@echo "Doing only some architecture cleanup..."
-	-rm -f $(DIR_OBJDEBUG)*
-	-rm -f $(DIR_OBJRELEASE)*
-	-rm -f $(DIR_DEP)*
-	-rm -f $(DIR_TMP)*
-	mkdir -p $(DIR_OBJDEBUG)
-	mkdir -p $(DIR_OBJRELEASE)
-	mkdir -p $(DIR_DEP)
-	mkdir -p $(DIR_TMP)
+	-${RM} $(DIR_OBJ)*
+	-${RM} $(DIR_DEP)*
+	-${RM} $(DIR_TMP)*
+	-${MKDIR} $(DIR_OBJ)
+	-${MKDIR} $(DIR_DEP)
+	-${MKDIR} $(DIR_TMP)
+	make all
 	@echo "Cleanup done"
 
 clean:
 	@echo "Doing some cleanup..."
-	-rm -f $(DIR_OBJDEBUG)*
-	-rm -f $(DIR_OBJRELEASE)*
-	-rm -f $(DIR_EXE)*
-	-rm -f $(DIR_DEP)*
-	-rm -f $(DIR_TMP)*
-	mkdir -p $(DIR_OBJDEBUG)
-	mkdir -p $(DIR_OBJRELEASE)
-	mkdir -p $(DIR_EXE)
-	mkdir -p $(DIR_DEP)
-	mkdir -p $(DIR_TMP)
-	-rm -rf gmon.out core *.tar.gz
+	-${RM} $(DIR_OBJ)*
+	-${RM} $(DIR_EXE)*
+	-${RM} $(DIR_DEP)*
+	-${RM} $(DIR_TMP)*
+	-${MKDIR} $(DIR_OBJ)
+	-${MKDIR} $(DIR_EXE)
+	-${MKDIR} $(DIR_DEP)
+	-${MKDIR} $(DIR_TMP)
 	@echo "Cleanup done"
-	mkdir -p $(DIR_DEP)
-	mkdir -p $(DIR_OBJDEBUG)
-	mkdir -p $(DIR_OBJRELEASE)
+	-${MKDIR} $(DIR_DEP)
+	-${MKDIR} $(DIR_OBJ)
 
 stats:
 	@echo "Stats of Sourcefiles"
-	@echo "  Lines Words Size"
+	@echo " Lines Words Size"
 	@cd $(DIR_SRC) ; wc *
 	@echo "Stats of Includefiles"
-	@echo "  Lines Words Size"
+	@echo " Lines Words Size"
 	@cd $(DIR_INC) ; wc *
 
 tar:
-	tar cfvz LanJukeBoxServer.tar.gz Makefile jukecfg.txt src/ inc/
+	tar cfvz jgravsim_backend_`date +%Y%m%d%H%M%S`.tar.gz Makefile ${DIR_SRC}* ${DIR_INC}* Gravity_Simulation_Backend.*
 
 docs:
+	-${MKDIR} doc/
 	doxygen doc/Doxyfile
 
--include $(DEP_FILES)
-
 help:
-	@echo "\
-make <target> Releasename=<releasename> out of:\n\
-(If Releasename is not given a debug version is build)\n\
-######################################################################################\n\
- all   : Build up dependencies and the executable                                   \n\
- run   : Build "all" and execute the program                                        \n\
- clean : Cleanup the whole projekt (obj, dep and exe folders will be fully purged)  \n\
-         all output files will also be deleted (including reports, logs etc)        \n\
-######################################################################################\n"
+	@echo -e "\
+USAGE: ARCH=[x86|amd64|sparc|sparc64] RELEASE=[true|false] make [COMMAND]\n\
+(If RELEASE is not given a release version is build)\n\n\
+Available COMMANDs:\n\
+ Build:\n\
+  all		: Build up dependencies and the executable					\n\
+  arch_x86	: Build the project with ARCH=x86 and afterwards ARCH=amd64			\n\
+  arch_sparc	: Build the project with ARCH=sparc and afterwards ARCH=sparc64			\n\
+  cleanarch	: Cleanup parts of the project (obj and dep folders) and build 'all'		\n\
+ Run:\n\
+  run		: Build all and execute the program						\n\
+  rundebug	: Build all and execute the program with gdb					\n\
+ Clean:\n\
+  clean		: Cleanup the whole project (obj, dep and exe folders will be fully purged)	\n\
+		\t  all output files will also be deleted (including reports, logs etc)		\n\
+ Others:\n\
+  stats		: Calculate wc-stats of src/ and inc/						\n\
+  tar		: Create a tar of inc/ src/ Makefile and Gravity_Simulation_Backend.*		\n"
+
+-include $(DEP_FILES)

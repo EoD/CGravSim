@@ -6,7 +6,6 @@
 #include <vector>
 #include <cfloat>
 //using namespace std; 
-//einlesen, berechnen, auslesen
 
 #define MAIN
 
@@ -15,26 +14,13 @@
 #include "gDebugFunc.h"
 #include "gCalcFunc.h"
 
-/*
- long double dtsmallsum;
- long double dtsum;
- long double dtime_step;
- */
-
-//int error = NOERROR;
-//bool flagcalc = true;
-
 int main(int argc, char* pArgs[]) {
-	//	long double datacount;
-	//	long double timecount;
-	//	long double timestep;
-	//	long double exactstep;
 	std::string filename;
-
 	GravDataSet* pgdsStart = new GravDataSet();
+	long double dtime_step_default = -1;
 
-	if (argc > 1) {
-		if( (std::string)pArgs[1] == FLAG_DEBUG1 || (std::string)pArgs[1] == FLAG_DEBUG2) {
+	for(int i=1; i < argc ; i++) {
+		if( (std::string)pArgs[i] == FLAG_DEBUG1 || (std::string)pArgs[i] == FLAG_DEBUG2) {
 			std::cout << "Frontend: " << FVERSION << std::endl;
 			std::cout << "Backend : " << BVERSION << std::endl;
 #ifdef DEBUG
@@ -42,26 +28,44 @@ int main(int argc, char* pArgs[]) {
 #endif
 			return 0;
 		} 
-		else if( (std::string)pArgs[1] == FLAG_HELP1 || (std::string)pArgs[1] == FLAG_HELP2) {
+		else if( (std::string)pArgs[i] == FLAG_HELP1 || (std::string)pArgs[i] == FLAG_HELP2) {
 			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << std::endl;
-			std::cout << "USAGE: jgravsim [FILENAME]" << std::endl;
+			std::cout << "USAGE: cgravsim [" << FLAG_HELP2 << " " << FLAG_DEBUG2 <<"] ["<< FLAG_TIME2 <<" TIMESTEP] [FILENAME]" << std::endl;
 			std::cout << "\t FILENAME has to be in the current WPT (v" << FVERSION << ") format" << std::endl;
+			std::cout << "Arguments:" << std::endl;
+			std::cout << "  " << FLAG_HELP2  << ", " << FLAG_HELP1  << "\t\tdisplay this help" << std::endl;
+			std::cout << "  " << FLAG_DEBUG2 << ", " << FLAG_DEBUG1 << "\t\tprint version of backend and expected frontend" << std::endl;
+			std::cout << "  " << FLAG_TIME2  << ", " << FLAG_TIME1  << "  \toverrides the timestep which is used for calculation" << std::endl;
 			std::cout << std::endl << "Version : " << BVERSION << std::endl;
 #ifdef DEBUG
 			std::cout <<   "Debug   : " << DEBUG << std::endl;
 #endif
 			return 0;
 		}
-		else {
-			debugout("Filename has been specified", 10);
-			filename = pArgs[1];
+		else if((std::string)pArgs[i] == FLAG_TIME1 || (std::string)pArgs[i] == FLAG_TIME2) {
+			if( ++i < argc ) {
+				std::istringstream(pArgs[i]) >> dtime_step_default;
+#ifdef DEBUG
+				std::cout << "Timestep has been specified: " << dtime_step_default << std::endl;
+#endif
+			} else { 
+				break; 
+			}
 		}
-	} else {
+		else {
+			filename = pArgs[i];
+#ifdef DEBUG
+			std::cout << "Filename has been specified: " << filename << std::endl;
+#endif
+		}
+		std::cout << "size= "<<filename.size()<<std::endl;
+	}
+	if( filename.size() <= 0 ) {
 		debugout("No filename has been specified", 10);
 		std::cout << "Hello. Tell me the filename: ";
 		std::cin >> filename;
 	}
-	std::cout << "Thanks. One moment please..." << std::endl;
+	std::cout << "Thanks. One moment please, loading " << filename << "..." << std::endl;
 	if (pgdsStart->loadFile(filename)) {
 		std::cout << "Loading Finished!" << std::endl;
 		std::cout << "Version: " << pgdsStart->strVersion << " (expected Version: ";
@@ -69,12 +73,10 @@ int main(int argc, char* pArgs[]) {
 		std::cout << ")" << std::endl;
 		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << std::endl;
 		std::cout << "rTime: " << pgdsStart->drTime << std::endl;
-		//GravStep* pgstest = (GravStep*)(*pgdsStart).steps;
 		std::vector<GravStep*>::iterator i = pgdsStart->steps.begin();
 #ifdef DEBUG
 		int count = 0;
 		std::vector<GravObject*>::iterator j;
-//		std::stringstream sstr;
 		debugout("Main() - For loop starts. No of elements: ",(*i)->numObjects, 15);
 		for (j = (*i)->objects.begin(); j != (*i)->objects.end(); ++j) {
 			std::cout << "Main() - Loop No: " << count << std::endl;
@@ -93,17 +95,20 @@ int main(int argc, char* pArgs[]) {
 //			}
 			count++;
 		}
+#endif
 
 		std::cout << "All Data loaded!" << std::endl;
+
+		if(dtime_step_default < 0 || dtime_step_default > (long double)(pgdsStart->drTime)) {
+			debugout("Setting dtime_step_default to default value!", 90);
+			dtime_step_default = (long double)(pgdsStart->drTime);
+		}
+
 		std::cout << "Calculation executing!" << std::endl;
 #ifdef DEBUG
 		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
-#endif
-//		std::vector<GravObject*>::iterator j = (*i)->objects.begin();
-	//	std::cout << "id: " << (*j)->id << ;
-		
-		CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), (long double)(pgdsStart->drTime));
+		CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), dtime_step_default);
 		std::cout << "Caclulation finished!" << std::endl;
 	}
 	else {

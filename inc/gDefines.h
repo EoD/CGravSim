@@ -3,7 +3,7 @@
 
 
 #ifdef _DEBUG32
- #define DEBUG 101
+ #define DEBUG 40
 #endif
 
 
@@ -16,6 +16,9 @@
 
 #define FLAG_HELP1 "--help"
 #define FLAG_HELP2 "-h"
+
+#define FLAG_TIME1 "--timestep"
+#define FLAG_TIME2 "-t"
 
 #define DATAPRECISION 20
 #define DELIMDATA ";"

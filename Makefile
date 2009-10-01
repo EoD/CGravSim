@@ -86,11 +86,10 @@ rundebug: all
 	$(DBG_PROG) $(DIR_EXE)$(EXE_NAME)
 
 arch_x86:
-	RELEASE=false ARCH=amd64 make
-	RELEASE=true ARCH=amd64 make
-	make cleanarch
-	RELEASE=false ARCH=x86 make
-	RELEASE=true ARCH=x86 make
+	RELEASE=false ARCH=amd64 make cleanarch
+	RELEASE=true ARCH=amd64 make cleanarch
+	RELEASE=false ARCH=x86 make cleanarch
+	RELEASE=true ARCH=x86 make cleanarch
 
 arch_sparc:
 	RELEASE=false ARCH=sparc64 make cleanarch

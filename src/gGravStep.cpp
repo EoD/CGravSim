@@ -59,22 +59,18 @@ GravObject* GravStep::addnew(GravObject* pgo) {
 bool GravStep::savetofile(std::string file, int stepid) {
 #ifdef DEBUG
 	std::vector<GravObject*>::iterator j;
-	std::cout << "  savetofile Objectlist:\n";
+	std::cout << "  savetofile Objectlist:" << std::endl;
 	(std::cout).precision(DATAPRECISION);
 	for (j = objects.begin(); j != objects.end(); ++j) {
 			std::cout << "  ID: " << (*j)->id << ", ";
-			//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
 			std::cout << "  Mass: " << (*j)->mass << ", ";
 			std::cout << "  Radius: " << (*j)->radius << ", ";
 			std::cout << "  velx: " << (*j)->velx << ", ";
 			std::cout << "  vely: " << (*j)->vely << ", ";
 			std::cout << "  velz: " << (*j)->velz << ", ";
-			//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-			//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-			//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
 			std::cout << "  posx: " << (*j)->posx << ", ";
 			std::cout << "  posy: " << (*j)->posy << ", ";
-			std::cout << "  posz: " << (*j)->posz << "\n";
+			std::cout << "  posz: " << (*j)->posz << std::endl;
 	}
 #endif
 	

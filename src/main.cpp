@@ -35,20 +35,20 @@ int main(int argc, char* pArgs[]) {
 
 	if (argc > 1) {
 		if( (std::string)pArgs[1] == FLAG_DEBUG1 || (std::string)pArgs[1] == FLAG_DEBUG2) {
-			std::cout << "Frontend:" << FVERSION << "\n";
-			std::cout << "Backend :" << BVERSION << "\n";
+			std::cout << "Frontend: " << FVERSION << std::endl;
+			std::cout << "Backend : " << BVERSION << std::endl;
 #ifdef DEBUG
-			std::cout << "Debug   :" << DEBUG << "\n";
+			std::cout << "Debug   : " << DEBUG << std::endl;
 #endif
 			return 0;
 		} 
 		else if( (std::string)pArgs[1] == FLAG_HELP1 || (std::string)pArgs[1] == FLAG_HELP2) {
-			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << "\n";
-			std::cout << "USAGE: jgravsim [FILENAME]" << "\n";
-			std::cout << "\t FILENAME has to be in the current WPT (v" << FVERSION << ") format" << "\n";
-			std::cout << "\nVersion :" << BVERSION << "\n";
+			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << std::endl;
+			std::cout << "USAGE: jgravsim [FILENAME]" << std::endl;
+			std::cout << "\t FILENAME has to be in the current WPT (v" << FVERSION << ") format" << std::endl;
+			std::cout << std::endl << "Version : " << BVERSION << std::endl;
 #ifdef DEBUG
-			std::cout <<   "Debug   :" << DEBUG << "\n";
+			std::cout <<   "Debug   : " << DEBUG << std::endl;
 #endif
 			return 0;
 		}
@@ -61,14 +61,14 @@ int main(int argc, char* pArgs[]) {
 		std::cout << "Hello. Tell me the filename: ";
 		std::cin >> filename;
 	}
-	std::cout << "Thanks. One moment please...\n";
+	std::cout << "Thanks. One moment please..." << std::endl;
 	if (pgdsStart->loadFile(filename)) {
-		std::cout << "Loading Finished!\n";
+		std::cout << "Loading Finished!" << std::endl;
 		std::cout << "Version: " << pgdsStart->strVersion << " (expected Version: ";
 		std::cout << FVERSION;
-		std::cout << ")\n";
-		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << "\n";
-		std::cout << "rTime: " << pgdsStart->drTime << "\n";
+		std::cout << ")" << std::endl;
+		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << std::endl;
+		std::cout << "rTime: " << pgdsStart->drTime << std::endl;
 		//GravStep* pgstest = (GravStep*)(*pgdsStart).steps;
 		std::vector<GravStep*>::iterator i = pgdsStart->steps.begin();
 #ifdef DEBUG
@@ -77,41 +77,37 @@ int main(int argc, char* pArgs[]) {
 //		std::stringstream sstr;
 		debugout("Main() - For loop starts. No of elements: ",(*i)->numObjects, 15);
 		for (j = (*i)->objects.begin(); j != (*i)->objects.end(); ++j) {
-			std::cout << "Main() - Loop No: " << count << "\n";
+			std::cout << "Main() - Loop No: " << count << std::endl;
 //			if ((*j)->type == 0) {	//deprecated
 				// add a Planet
 
-				std::cout << "  ID: " << (*j)->id << "\n";
-				//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
-				std::cout << "  Mass: " << (*j)->mass << "\n";
-				std::cout << "  Radius: " << (*j)->radius << "\n";
-				std::cout << "  velx: " << (*j)->velx << "\n";
-				std::cout << "  vely: " << (*j)->vely << "\n";
-				std::cout << "  velz: " << (*j)->velz << "\n";
-				//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-				//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-				//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
-				std::cout << "  posx: " << (*j)->posx << "\n";
-				std::cout << "  posy: " << (*j)->posy << "\n";
-				std::cout << "  posz: " << (*j)->posz << "\n";
+				std::cout << "  ID: " << (*j)->id << std::endl;
+				std::cout << "  Mass: " << (*j)->mass << std::endl;
+				std::cout << "  Radius: " << (*j)->radius << std::endl;
+				std::cout << "  velx: " << (*j)->velx << std::endl;
+				std::cout << "  vely: " << (*j)->vely << std::endl;
+				std::cout << "  velz: " << (*j)->velz << std::endl;
+				std::cout << "  posx: " << (*j)->posx << std::endl;
+				std::cout << "  posy: " << (*j)->posy << std::endl;
+				std::cout << "  posz: " << (*j)->posz << std::endl;
 //			}
 			count++;
 		}
 
-		std::cout << "All Data loaded!\n";
-		std::cout << "Calculation executing!\n";
+		std::cout << "All Data loaded!" << std::endl;
+		std::cout << "Calculation executing!" << std::endl;
 #ifdef DEBUG
-		std::cout << " Debuglevel=" << DEBUG << "\n";
+		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
 #endif
 //		std::vector<GravObject*>::iterator j = (*i)->objects.begin();
 	//	std::cout << "id: " << (*j)->id << ;
 		
 		CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), (long double)(pgdsStart->drTime));
-		std::cout << "Caclulation finished!\n";
+		std::cout << "Caclulation finished!" << std::endl;
 	}
 	else {
-		std::cout << "Loading failed!\n";
+		std::cout << "Loading failed!" << std::endl;
 	}
 	return 0;
 }

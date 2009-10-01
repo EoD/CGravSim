@@ -120,24 +120,20 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	//Vector<Masspoint> vmpsout = new Vector<Masspoint>();
 #ifdef DEBUG
 	std::vector<GravObject*>::reverse_iterator j;
-	std::cout << "  vmpsinsert Objectlist ("<< vmpsinsert->numObjects <<" elements) :\n";
+	std::cout << "  vmpsinsert Objectlist ("<< vmpsinsert->numObjects <<" elements) :" << std::endl;
 	(std::cout).precision(DATAPRECISION);
 	int count = 0;
 	for (j = (vmpsinsert)->objects.rbegin(); j != (vmpsinsert)->objects.rend(); ++j) {
 		std::cout << "  ID: " << (*j)->id << ", ";
-		//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
 		std::cout << "  velx: " << (*j)->velx << ", ";
 		std::cout << "  vely: " << (*j)->vely << ", ";
 		std::cout << "  velz: " << (*j)->velz << ", ";
-		//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-		//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-		//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
 		std::cout << "  posx: " << (*j)->posx << ", ";
 		std::cout << "  posy: " << (*j)->posy << ", ";
-		std::cout << "  posz: " << (*j)->posz << "\n";
-		std::cout << " count: " << count++ << "\n";
+		std::cout << "  posz: " << (*j)->posz << std::endl;
+		std::cout << " count: " << count++ << std::endl;
 
 		if((*j)->mass <= 0 || (*j)->radius <= 0) {
 			debugout("calcAcc() - Var ERROR0",99);
@@ -318,23 +314,19 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 
 #ifdef DEBUG
 	//std::vector<GravObject*>::reverse_iterator j;
-	std::cout << "  vmpsout Objectlist ("<< vmpsout->numObjects <<" elements) :\n";
+	std::cout << "  vmpsout Objectlist ("<< vmpsout->numObjects <<" elements) :" << std::endl;
 	(std::cout).precision(DATAPRECISION);
 	count = 0;
 	for (j = (vmpsout)->objects.rbegin(); j != (vmpsout)->objects.rend(); ++j) {
 		std::cout << "  ID: " << (*j)->id << ", ";
-		//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
 		std::cout << "  velx: " << (*j)->velx << ", ";
 		std::cout << "  vely: " << (*j)->vely << ", ";
 		std::cout << "  velz: " << (*j)->velz << ", ";
-		//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-		//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-		//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
 		std::cout << "  posx: " << (*j)->posx << ", ";
 		std::cout << "  posy: " << (*j)->posy << ", ";
-		std::cout << "  posz: " << (*j)->posz << "\n";
+		std::cout << "  posz: " << (*j)->posz << std::endl;
 		count ++;
 
 		if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -565,23 +557,19 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 		if (pgs_temp == NULL && pgs_start != NULL) {
 #ifdef DEBUG
 			std::vector<GravObject*>::reverse_iterator j;
-			std::cout << "  pgs_start Objectlist ("<< pgs_start->numObjects <<" elements) :\n";
+			std::cout << "  pgs_start Objectlist ("<< pgs_start->numObjects <<" elements) :" << std::endl;
 			(std::cout).precision(DATAPRECISION);
 			int count = 0;
 			for (j = (pgs_start)->objects.rbegin(); j != (pgs_start)->objects.rend(); ++j) {
 				std::cout << "  ID: " << (*j)->id << ", ";
-				//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
 				std::cout << "  velx: " << (*j)->velx << ", ";
 				std::cout << "  vely: " << (*j)->vely << ", ";
 				std::cout << "  velz: " << (*j)->velz << ", ";
-				//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-				//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-				//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
 				std::cout << "  posx: " << (*j)->posx << ", ";
 				std::cout << "  posy: " << (*j)->posy << ", ";
-				std::cout << "  posz: " << (*j)->posz << "\n";
+				std::cout << "  posz: " << (*j)->posz << std::endl;
 				count ++;
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -601,23 +589,19 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 			//pgs_temp = pgs_start;
 #ifdef DEBUG
 			std::vector<GravObject*>::reverse_iterator k;
-			std::cout << "  pgs_current Objectlist ("<< pgs_current->numObjects <<" elements) :\n";
+			std::cout << "  pgs_current Objectlist ("<< pgs_current->numObjects <<" elements) :" << std::endl;
 			(std::cout).precision(DATAPRECISION);
 			count = 0;
 			for (k = (pgs_current)->objects.rbegin(); k != (pgs_current)->objects.rend(); ++k) {
 				std::cout << "  ID: " << (*k)->id << ", ";
-				//std::cout << "  type: " << (*k)->type << "\n";	//deprecated
 				std::cout << "  Mass: " << (*k)->mass << ", ";
 				std::cout << "  Radius: " << (*k)->radius << ", ";
 				std::cout << "  velx: " << (*k)->velx << ", ";
 				std::cout << "  vely: " << (*k)->vely << ", ";
 				std::cout << "  velz: " << (*k)->velz << ", ";
-				//std::cout << "  accx: " << (*k)->accx << "\n";	//deprecated
-				//std::cout << "  accy: " << (*k)->accy << "\n";	//deprecated
-				//std::cout << "  accz: " << (*k)->accz << "\n";	//deprecated
 				std::cout << "  posx: " << (*k)->posx << ", ";
 				std::cout << "  posy: " << (*k)->posy << ", ";
-				std::cout << "  posz: " << (*k)->posz << "\n";
+				std::cout << "  posz: " << (*k)->posz << std::endl;
 				count ++;
 
 				if((*k)->mass <= 0 || (*k)->radius <= 0) {
@@ -650,23 +634,19 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 		else if (pgs_temp != NULL && pgs_start == NULL) {
 #ifdef DEBUG
 			std::vector<GravObject*>::reverse_iterator j;
-			std::cout << "  pgs_temp Objectlist:\n";
+			std::cout << "  pgs_temp Objectlist:" << std::endl;
 			(std::cout).precision(DATAPRECISION);
 			int count = 0;
 			for (j = (pgs_temp)->objects.rbegin(); j != (pgs_temp)->objects.rend(); ++j) {
 				std::cout << "  ID: " << (*j)->id << ", ";
-				//std::cout << "  type: " << (*j)->type << "\n";	//deprecated
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
 				std::cout << "  velx: " << (*j)->velx << ", ";
 				std::cout << "  vely: " << (*j)->vely << ", ";
 				std::cout << "  velz: " << (*j)->velz << ", ";
-				//std::cout << "  accx: " << (*j)->accx << "\n";	//deprecated
-				//std::cout << "  accy: " << (*j)->accy << "\n";	//deprecated
-				//std::cout << "  accz: " << (*j)->accz << "\n";	//deprecated
 				std::cout << "  posx: " << (*j)->posx << ", ";
 				std::cout << "  posy: " << (*j)->posy << ", ";
-				std::cout << "  posz: " << (*j)->posz << "\n";
+				std::cout << "  posz: " << (*j)->posz << std::endl;
 				count++;
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -737,9 +717,9 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 			//TODO FIX myModel.AddStep(vmps_temp);	//save data to file
 			pgs_temp->savetofile(filename, (int)(dtime_sum/dtime_save));
 			//to be able to communicate with the frontend
-			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << "\n";
+			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1)
-				std::cout << "Percent#"<< ++percent << "\n";
+				std::cout << "Percent#"<< ++percent << std::endl;
 
 
 			dtime_sum += dtime_smallsum;
@@ -762,7 +742,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	} //TODO FIX myModel.correctHeader(new File(Model.Defaultname), (int)(dtsum/timecount));
 
 	debugout("calcMain - Quit - Roger and out", 15);
-	std::cout << "Calculation finished\n";
+	std::cout << "Calculation finished" << std::endl;
 
 	delete pgs_temp;
 	//myController.ThreadFinished(vmps_current, error);	

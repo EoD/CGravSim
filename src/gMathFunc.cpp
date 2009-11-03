@@ -52,7 +52,7 @@ long double sqrtx(long double x) {
 #ifdef WIN32
 	return sqrtl(x);
 #else
-	return (long double)sqrt((double)x);
+	return (long double)sqrt((long double)x);
 #endif
 }
 

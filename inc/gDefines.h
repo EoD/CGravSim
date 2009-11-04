@@ -23,6 +23,8 @@
 #define DATAPRECISION 20
 #define DELIMDATA ";"
 
+#define FILE_PERCENT "percent.tmp"
+
 #ifdef WIN32
  #define DELIMLINE "\n"
  #define LINEDELIMNUM	0	//this comes from the fact, that windows recognizes "CR LN" as _one_ linebreak

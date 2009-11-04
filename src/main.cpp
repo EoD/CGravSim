@@ -58,8 +58,16 @@ int main(int argc, char* pArgs[]) {
 			std::cout << "Filename has been specified: " << filename << std::endl;
 #endif
 		}
-		std::cout << "size= "<<filename.size()<<std::endl;
 	}
+
+	int del = remove(FILE_PERCENT);
+#ifdef DEBUG
+	if (del != 0)
+		std::cout << "Remove operation 1 failed" << std::endl;
+	else
+		std::cout << FILE_PERCENT << " has been deleted #1" << std::endl;
+#endif
+
 	if( filename.size() <= 0 ) {
 		debugout("No filename has been specified", 10);
 		std::cout << "Hello. Tell me the filename: ";
@@ -67,12 +75,18 @@ int main(int argc, char* pArgs[]) {
 	}
 	std::cout << "Thanks. One moment please, loading " << filename << "..." << std::endl;
 	if (pgdsStart->loadFile(filename)) {
+		if(dtime_step_default < 0 || dtime_step_default > (long double)(pgdsStart->drTime)) {
+			debugout("Setting dtime_step_default to default value!", 90);
+			dtime_step_default = (long double)(pgdsStart->drTime);
+		}
+
 		std::cout << "Loading Finished!" << std::endl;
 		std::cout << "Version: " << pgdsStart->strVersion << " (expected Version: ";
 		std::cout << FVERSION;
 		std::cout << ")" << std::endl;
 		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << std::endl;
-		std::cout << "rTime: " << pgdsStart->drTime << std::endl;
+		std::cout << "Save dTime: " << pgdsStart->drTime << std::endl;
+		std::cout << "Calc dTime: " << dtime_step_default << std::endl;
 		std::vector<GravStep*>::iterator i = pgdsStart->steps.begin();
 #ifdef DEBUG
 		int count = 0;
@@ -99,17 +113,16 @@ int main(int argc, char* pArgs[]) {
 
 		std::cout << "All Data loaded!" << std::endl;
 
-		if(dtime_step_default < 0 || dtime_step_default > (long double)(pgdsStart->drTime)) {
-			debugout("Setting dtime_step_default to default value!", 90);
-			dtime_step_default = (long double)(pgdsStart->drTime);
-		}
-
 		std::cout << "Calculation executing!" << std::endl;
 #ifdef DEBUG
 		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
 		CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), dtime_step_default);
-		std::cout << "Caclulation finished!" << std::endl;
+		std::cout << std::endl << "Calculation finished!" << std::endl;
+
+		//del = remove(FILE_PERCENT);
+		del = 1;
+
 	}
 	else {
 		std::cout << "Loading failed!" << std::endl;

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <cfloat>
 #include "gDefines.h"
@@ -550,6 +551,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	error = NOERROR;
 	int percent = 0;
 	debugout("CalcCode() - Vars initialized, starting", 15);
+	savepercentage(FILE_PERCENT,percent);
 
 	while (dtime_sum < dtime_max && flagcalc == true) {
 
@@ -718,8 +720,12 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 			pgs_temp->savetofile(filename, (int)(dtime_sum/dtime_save));
 			//to be able to communicate with the frontend
 			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
-			if((dtime_sum*100.0)/dtime_max > percent+1)
-				std::cout << "Percent#"<< ++percent << std::endl;
+			if((dtime_sum*100.0)/dtime_max > percent+1) {
+				if(!savepercentage(FILE_PERCENT,++percent)) {
+					error = UNKNOWNERROR;
+					break;
+				}
+			}
 
 
 			dtime_sum += dtime_smallsum;
@@ -742,12 +748,34 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	} //TODO FIX myModel.correctHeader(new File(Model.Defaultname), (int)(dtsum/timecount));
 
 	debugout("calcMain - Quit - Roger and out", 15);
-	std::cout << "Calculation finished" << std::endl;
+	if(!savepercentage(FILE_PERCENT, 100))
+		error = UNKNOWNERROR;
 
 	delete pgs_temp;
-	//myController.ThreadFinished(vmps_current, error);	
-
 	return error;
+}
+
+bool savepercentage(std::string file, int percent) {
+#ifdef DEBUG
+	std::cout << "Write Percent#"<< percent << " to " << (std::string)file << std::endl;
+#else
+	if(percent < 10) 
+		std::cout << " ";
+
+	std::cout << percent << "%" << std::flush << "\b\b\b";
+#endif 
+
+	std::ofstream ofs;
+	ofs.open(file.c_str(), std::ios::out | std::ios::app);
+	if(!ofs.is_open()) {
+	        std::cout << "savepercentage() - No File found!" << std::endl;
+	        debugout("savepercentage() - No File found!", 99);
+	        return false;
+	}
+	ofs << percent << DELIMLINE;
+	ofs.close();
+	debugout("savepercentage() - Percentage successfully saved!", 41);
+	return true;
 }
 
 /*#ifdef DEBUG_INC_GRAVITY_CALCFUNC

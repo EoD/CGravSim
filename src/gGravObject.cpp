@@ -67,9 +67,9 @@ long double GravObject::getSchwarzschildRadius() {
 
 long double GravObject::drange(GravObject* mp2) {
 	//long double drange = sqrtx(dx^2 + dy^2 + dz^2)
-	long double drange = powx((long double)(mp2->posx - posx), 2.0) 
-		+ powx((long double)(mp2->posy - posy), 2.0) 
-		+ powx((long double)(mp2->posz - posz), 2.0);
+	long double drange = powx(toDouble(mp2->posx - posx), 2.0) 
+		+ powx(toDouble(mp2->posy - posy), 2.0) 
+		+ powx(toDouble(mp2->posz - posz), 2.0);
 	//MLVector mlvrange = MVMath.SubMV(this.getCoordMLV(), mp2.getCoordMLV());	
 	return sqrtx(drange);
 }

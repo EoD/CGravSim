@@ -141,7 +141,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 			return 0;
 		}
 	}
-	if(count <= 1) {
+	if(count < 1) {
 		debugout("calcAcc() - ERROR0, help",99);
 		flagcalc = false;
 		return 0;
@@ -335,7 +335,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 			return 0;
 		}
 	}
-	if(count <= 1) {
+	if(count < 1) {
 		debugout("calcAcc() - ERROR1, help",99);
 		flagcalc = false;
 		return 0;
@@ -579,7 +579,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 					return 0;
 				}
 			}
-			if(count <= 1) {
+			if(count < 1) {
 				debugout("CalcCode() - ERROR1, help",99);
 				flagcalc = false;
 				return 0;
@@ -611,7 +611,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 					return 0;
 				}
 			}
-			if(count <= 1) {
+			if(count < 1) {
 				debugout("CalcCode() - ERROR2, help",99);
 				flagcalc = false;
 				return 0;
@@ -656,7 +656,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 					return 0;
 				}
 			}
-			if(count <= 1) {
+			if(count < 1) {
 				debugout("CalcCode() - ERROR3, help",99);
 				flagcalc = false;
 				return 0;

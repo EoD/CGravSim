@@ -552,6 +552,8 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	int percent = 0;
 	debugout("CalcCode() - Vars initialized, starting", 15);
 	savepercentage(FILE_PERCENT,percent);
+	std::ofstream ofs_temp;
+	ofs_temp.open(filename.c_str(), std::ios::out | std::ios::app);
 
 	while (dtime_sum < dtime_max && flagcalc == true) {
 
@@ -717,7 +719,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 		if (dtime_smallsum >= dtime_save) {
 			debugout("calcMain() - dtsmallsum >= timestep", 10); //: "+dtsmallsum+">="+timestep);
 			//TODO FIX myModel.AddStep(vmps_temp);	//save data to file
-			pgs_temp->savetofile(filename, (int)(dtime_sum/dtime_save));
+			pgs_temp->savetofile(ofs_temp, (int)(dtime_sum/dtime_save));
 			//to be able to communicate with the frontend
 			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
@@ -751,6 +753,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	if(!savepercentage(FILE_PERCENT, 100))
 		error = UNKNOWNERROR;
 
+	ofs_temp.close();
 	delete pgs_temp;
 	return error;
 }

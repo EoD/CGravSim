@@ -56,7 +56,7 @@ GravObject* GravStep::addnew(GravObject* pgo) {
 	return newone;
 }
 
-bool GravStep::savetofile(std::string file, int stepid) {
+bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 #ifdef DEBUG
 	std::vector<GravObject*>::iterator j;
 	std::cout << "  savetofile Objectlist:" << std::endl;
@@ -74,8 +74,6 @@ bool GravStep::savetofile(std::string file, int stepid) {
 	}
 #endif
 	
-	std::ofstream ofs;
-	ofs.open(file.c_str(), std::ios::out | std::ios::app);
 	if (!ofs) {
 		debugout("savetofile() - No File found!", 99);
 		return false;
@@ -105,7 +103,6 @@ bool GravStep::savetofile(std::string file, int stepid) {
 			ofs << (*i)->posz << DELIMLINE;
 		}
 	}
-	ofs.close();
 	debugout("savetofile() - Step successfully saved!", 40);
 	return true;
 }

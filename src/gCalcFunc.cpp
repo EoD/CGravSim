@@ -393,9 +393,9 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 	long double dspeedx_all = dmomx_all / dmass;
 	long double dspeedy_all = dmomy_all / dmass;
 	long double dspeedz_all = dmomz_all / dmass;
-	dspeedx_all = dmomx_all * dgamma3;
-	dspeedy_all = dmomy_all * dgamma3;
-	dspeedz_all = dmomz_all * dgamma3;
+	dspeedx_all *= dgamma3;
+	dspeedy_all *= dgamma3;
+	dspeedz_all *= dgamma3;
 
 	//JAVA
 	//mpsecspeed = MVMath.DivMVNum(mdvmoment, dmass); 	//gesamtv = gesamtimpuls / gesamtmasse

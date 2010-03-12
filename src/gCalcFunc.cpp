@@ -1,3 +1,6 @@
+#ifdef _OPENMP
+ #include <omp.h>
+#endif
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -152,12 +155,32 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	//debugout("ID 1: Old Coords(x1,x2,x3): "+((Masspoint)masspoints.get(1)).mlvpos.x1+","+((Masspoint)masspoints.get(1)).mlvpos.x2+","+((Masspoint)masspoints.get(1)).mlvpos.x3);
 	//Berechnung der neuen Position f�r alle Objekte von ID 0 bis ID i
 	debugout("calcAcc() - Start() - dtime_step = ",dtime_step, 10);
+		
+	
+#ifdef _OPENMP
+	omp_set_num_threads(omp_get_num_procs() * omp_get_num_procs() / 2 + 1);
+#endif
+	bool blightspeederror = false;
 
-	std::vector<GravObject*>::reverse_iterator i;
-	for (i = vmpsinsert->objects.rbegin(); i != vmpsinsert->objects.rend() ; ++i) {
+	#pragma omp parallel for                                                                                  
+	for (std::vector<GravObject*>::size_type i = 0; i < vmpsinsert->objects.size() ; i++) {
+
+		//skip the for-loop if error has been reached	
+		if(blightspeederror) {
+#ifdef _OPENMP
+			continue;
+#else
+			break;
+#endif
+		}
+
 		//debugout("calcAcc() - for Schleife Start");
-		GravObject* mpold = (*i);
-		GravObject* mpnew = vmpsout->addnew(mpold);
+		GravObject* mpold = (vmpsinsert->objects)[i];
+		GravObject* mpnew;
+		
+		#pragma omp critical
+		mpnew = vmpsout->addnew(mpold);
+
 		//debugout("calcAcc() - Object added",15);
 
 		debugout("calcAcc() - old x=",mpold->posx,5);
@@ -236,7 +259,9 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #endif
 			}
 			debugout("calcAcc() - dv+v0 > c => break. New dtime_step=", dtime_step, 10); //="+dtime_step);
-			return null;
+
+			blightspeederror = true;
+			#pragma omp flush (blightspeederror)
 		}
 
 		//add dv to complete v
@@ -312,6 +337,8 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		debugout("calcAcc() - new y=",mpnew->posy,5);
 		debugout("calcAcc() - new z=",mpnew->posz,5);
 	}
+	if(blightspeederror)
+		return NULL;
 
 #ifdef DEBUG
 	//std::vector<GravObject*>::reverse_iterator j;

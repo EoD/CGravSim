@@ -41,6 +41,9 @@ CFLAGS = -O2 -g -Wall
 DIR_OBJ = obj_${ARCH}_r/
 endif
 
+#Enable handling of OpenMP directives!
+#CFLAGS += -fopenmp
+
 #Name of the executable:
 
 ifdef WINDOWS

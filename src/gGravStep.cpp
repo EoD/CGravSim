@@ -32,13 +32,13 @@ void GravStep::empty() {
 }
 
 void GravStep::add(GravObject* pgo) {
-	if(pgo != null) {
+	if(pgo != NULL) {
 		numObjects++;
 		objects.push_back(pgo);
 		debugout("GravStep::add - Object added", 5);
 	}
 	else
-		debugout("GravStep::add - Tried to add null", 90);
+		debugout("GravStep::add - Tried to add NULL", 90);
 }
 
 GravObject* GravStep::addnew(GravObject* pgo) {
@@ -112,7 +112,7 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
   	public int correctHeader(File infile, int newSteps) {
 		try {
 			FileReader fr;
-			RandomAccessFile rafile = null;
+			RandomAccessFile rafile = NULL;
 			BufferedReader br;
 			String sCurLine;
 			String[] saCurLine;
@@ -123,7 +123,7 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 			sCurLine = br.readLine(); // read the first line //
 			//new FileWriter(infile);
 			
-			if(sCurLine == null) {
+			if(sCurLine == NULL) {
 				br.close();
 				return INFILE_EOFSTARTERROR;
 			}
@@ -154,7 +154,7 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 					e.printStackTrace();
 				}
 				finally {
-					if ( rafile != null ) {
+					if ( rafile != NULL ) {
 						try { rafile.close(); } 
 						catch ( IOException e ) { e.printStackTrace(); }
 					}

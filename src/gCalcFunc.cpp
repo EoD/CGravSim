@@ -514,7 +514,7 @@ GravStep* collisionCheck(GravStep* pgs_insert) {
 				debugout("collisionCheck() - hmmmm. ID: ", mpi->id, 10);
 				flagcalc = false;
 				error = UNKNOWNERROR;
-				return null;
+				return NULL;
 			}
 
 			//check if the two objects are colliding 
@@ -702,7 +702,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 			debugout("CalcCode - Collision Check ending", 5);
 		} else {
 			pgs_temp = new GravStep();
-			debugout("CalcCode() - temp==null, start==null - seems that new dt was found", 20);
+			debugout("CalcCode() - temp==NULL, start==NULL - seems that new dt was found", 20);
 			//TODO Remove for final
 			if(pgs_current->numObjects <= 1) {
 				return 0;
@@ -736,11 +736,11 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 		pgs_temp = calcAcc(pgs_current, pgs_temp);
 
 		if (pgs_temp == NULL) {
-			debugout("calcMain() - calcAcc hat null zurückgegeben.", 10); // Neues dtime_step="+dtime_step+", dtsum="+dtsum);
+			debugout("calcMain() - calcAcc hat NULL zurückgegeben.", 10); // Neues dtime_step="+dtime_step+", dtsum="+dtsum);
 			continue;
 		} else {
 			dtime_smallsum += dtime_step;
-			debugout("calcMain() - calcAcc hat nicht null zurückgegeben.", 10); //(size="+vmps_temp.size()+", dtime_step="+dtime_step+"). Neues dtsum="+dtsum);
+			debugout("calcMain() - calcAcc hat nicht NULL zurückgegeben.", 10); //(size="+vmps_temp.size()+", dtime_step="+dtime_step+"). Neues dtsum="+dtsum);
 		}
 
 		if (dtime_smallsum >= dtime_save) {

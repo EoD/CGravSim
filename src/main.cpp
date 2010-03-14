@@ -100,9 +100,7 @@ int main(int argc, char* pArgs[]) {
 				std::cout << "  ID: " << (*j)->id << std::endl;
 				std::cout << "  Mass: " << (*j)->mass << std::endl;
 				std::cout << "  Radius: " << (*j)->radius << std::endl;
-				std::cout << "  velx: " << (*j)->velx << std::endl;
-				std::cout << "  vely: " << (*j)->vely << std::endl;
-				std::cout << "  velz: " << (*j)->velz << std::endl;
+				std::cout << "  vel: " << (*j)->vel << std::endl;
 				std::cout << "  posx: " << (*j)->posx << std::endl;
 				std::cout << "  posy: " << (*j)->posy << std::endl;
 				std::cout << "  posz: " << (*j)->posz << std::endl;

@@ -3,8 +3,9 @@
 
 #include "gGravObject.h"
 #include "gGravStep.h"
+#include "gMathVec.h"
 
-long double* calcForce(GravObject* mpmain, GravStep* vmpsinsert, long double mdvforcetotal[3]);
+int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal);
 GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout);
 GravObject* collision(GravObject* mpsurvive, GravObject* mpkill);
 GravStep* collisionCheck(GravStep* pgs_insert);

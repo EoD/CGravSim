@@ -80,24 +80,6 @@ long double gamma(long double v) {
 	return (long double)dsqrt;
 }
 
-long double ProScaMV(long double mv1x, long double mv1y, long double mv1z, long double mv2x,
-		long double mv2y, long double mv2z) {
-	return (mv1x * mv2x + mv1y * mv2y) + mv1z * mv2z;
-}
-long double ProScaMV(long double mv1x, long double mv1y, long double mv1z) {
-	return (mv1x * mv1x + mv1y * mv1y) + mv1z * mv1z;
-}
-
-//long double abs(long double x) {
-//	if( x >= 0 )
-//		return x;
-//	else
-//		return -x;
-//}
-
-long double abs(long double x1, long double x2, long double x3) {
-	return (powx(x1, 2.0) + powx(x2, 2.0) + powx(x3, 2.0));
-}
 long double abs(long double x[], int size) {
 	long double y=0;
 	for (int i=0; i < size; i++) {

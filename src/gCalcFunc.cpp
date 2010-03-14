@@ -28,11 +28,9 @@ long double dtime_step = 0;
 
 //Berechnet die Kraft auf ein referenz objekt (mpmain)
 //Kraft entsteht durch grav-wirkung aller anderen
-long double* calcForce(GravObject* mpmain, GravStep* vmpsinsert, long double mdvforcetotal[3]) {
+int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
 	//MDVector mdvforcetotal = new MDVector(0,0,0);
-	mdvforcetotal[0] = 0.0;
-	mdvforcetotal[1] = 0.0;
-	mdvforcetotal[2] = 0.0;
+	mdvforcetotal = mdv(0);
 
 	debugout("calcForce() - START ID: ",mpmain->id,5);
 	std::vector<GravObject*>::reverse_iterator i;
@@ -72,9 +70,7 @@ long double* calcForce(GravObject* mpmain, GravStep* vmpsinsert, long double mdv
 
 		if (isnan(dforce)) {
 			debugout("calcForce() - dforce is NaN - ERROR", 99);
-			flagcalc = false;
-			error = NANERROR;
-			return NULL;
+			return NANERROR;
 		}
 		//debugout("calcForce() - relm1,relm2 = dforce: "+mpmain.getSRTMass()+","+mpsec.getSRTMass()+" = "+dforce);
 		//debugout("calcForce() - mpsec: ID="+mpsec.id+", absmass="+mpsec.getAbsMass()+", absspeed="+mpsec.getSpeed());
@@ -83,41 +79,30 @@ long double* calcForce(GravObject* mpmain, GravStep* vmpsinsert, long double mdv
 		//debugout("calcForce() - Gravconst = "+GRAVCONST+","+(double)GRAVCONST+","+(float)GRAVCONST+","+(int)GRAVCONST+","+(long)GRAVCONST);
 
 		//mdvrquot calculated with MDVector because 'radius' is r / r^3
-		long double mdvrquot[] = { 0.0, 0.0, 0.0 };
+		mdv mdvrquot(0);
 		//Converted from long (mm) to double (meter)
 		debugout("calcForce() - abs(mlvdist)=", abs(mlvdist), 5);
-		mdvrquot[0] = toDouble(mlvdist[0]) / abs(mlvdist);
-		mdvrquot[1] = toDouble(mlvdist[1]) / abs(mlvdist);
-		mdvrquot[2] = toDouble(mlvdist[2]) / abs(mlvdist);
-		debugout(" calcForce() - mdvrquot x:", mdvrquot[0], 5);
-		debugout(" calcForce() - mdvrquot y:", mdvrquot[1], 5);
-		debugout(" calcForce() - mdvrquot z:", mdvrquot[2], 5);
+		mdvrquot.x = toDouble(mlvdist[0]) / abs(mlvdist);
+		mdvrquot.y = toDouble(mlvdist[1]) / abs(mlvdist);
+		mdvrquot.z = toDouble(mlvdist[2]) / abs(mlvdist);
+		debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
 		//mdvrquot = MVMath.DivMVNum(MVMath.ConvertToD(mlvdist), MVMath.ConvertToD(mlvdist).abs()); 	// vec r / |r|
 		//debugout(" Mdvrquot.abs,r1,r2,r3: "+mdvrquot.abs()+","+mdvrquot.x1+","+mdvrquot.x2+","+mdvrquot.x3);
 
 		//Force-Vector: combination of mdvrquot and dforce
-		long double mdvforce[] = { 0.0, 0.0, 0.0 };
-		mdvforce[0] = mdvrquot[0] * dforce;
-		mdvforce[1] = mdvrquot[1] * dforce;
-		mdvforce[2] = mdvrquot[2] * dforce; // % * |Fg|
-		debugout(" calcForce() - mdvforce x:", mdvforce[0], 5);
-		debugout(" calcForce() - mdvforce y:", mdvforce[1], 5);
-		debugout(" calcForce() - mdvforce z:", mdvforce[2], 5);
+		mdv mdvforce(0);
+		mdvforce = mdvrquot * dforce;
+		debugout(" calcForce() - mdvforce: ", mdvforce, 5);
 		//debugout(" |mdvforce|,x1,x2,x3: "+mdvforce.abs()+","+mdvforce.x1+","+mdvforce.x2+","+mdvforce.x3);
 
 		//kraft von objekt i auf ref-objekt wird zu einer gesamt kraft addiert
-		mdvforcetotal[0] += mdvforce[0];
-		mdvforcetotal[1] += mdvforce[1];
-		mdvforcetotal[2] += mdvforce[2];
-		debugout(" calcForce() - totalmvforce x:", mdvforcetotal[0], 5);
-		debugout(" calcForce() - totalmvforce y:", mdvforcetotal[1], 5);
-		debugout(" calcForce() - totalmvforce z:", mdvforcetotal[2], 5);
+		mdvforcetotal += mdvforce;
+		debugout(" calcForce() - totalmvforce: ", mdvforcetotal, 5);
 		//debugout(" |mvforcetotal|,x1,x2,x3: "+mdvforcetotal.abs()+","+mdvforcetotal.x1+","+mdvforcetotal.x2+","+mdvforcetotal.x3);
 	}
 	//debugout("calcForce() - |mvforcesum|,x1,x2,x3: "+mdvforcetotal.abs()+","+mdvforcetotal.x1+","+mdvforcetotal.x2+","+mdvforcetotal.x3);
 
-	//return gesamtkraft
-	return mdvforcetotal;
+	return NOERROR;
 }
 
 GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
@@ -131,9 +116,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		std::cout << "  ID: " << (*j)->id << ", ";
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
-		std::cout << "  velx: " << (*j)->velx << ", ";
-		std::cout << "  vely: " << (*j)->vely << ", ";
-		std::cout << "  velz: " << (*j)->velz << ", ";
+		std::cout << "  vel: " << (*j)->vel << ", ";
 		std::cout << "  posx: " << (*j)->posx << ", ";
 		std::cout << "  posy: " << (*j)->posy << ", ";
 		std::cout << "  posz: " << (*j)->posz << std::endl;
@@ -193,12 +176,14 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 
 		//JAVA
 		//MDVector mvforce = new MDVector(0,0,0);		
-		long double mvforce[] = { 0.0, 0.0, 0.0 };
-		calcForce(mpold, vmpsinsert, mvforce);
+		mdv mvforce(0);
+		error = calcForce(mpold, vmpsinsert, mvforce);
+		if(error != NOERROR) {
+			flagcalc = false;
+			return NULL;
+		}
 
-		debugout(" calcAcc() - totalmvforce x:", mvforce[0], 5);
-		debugout(" calcAcc() - totalmvforce y:", mvforce[1], 5);
-		debugout(" calcAcc() - totalmvforce z:", mvforce[2], 5);
+		debugout(" calcAcc() - totalmvforce: ", mvforce, 5);
 
 		//debugout(" |MVforcetotal|,x1,x2,x3: "+mvforce.abs()+","+mvforce.x1+","+mvforce.x2+","+mvforce.x3);
 
@@ -206,18 +191,15 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//Math.sqrtx( Math.powx(LIGHTSPEED,2.0) - Math.powx(mpmain.getSpeed(),2.0) / Math.powx(LIGHTSPEED,2.0));
 		//TODO reform!
 		long double da1 = gamma(mpold->getAbsSpeed());
-		da1 *= powx(LIGHTSPEED, 2.0) * mvforce[0]- mpold->velx * ProScaMV(mvforce[0], mvforce[1], mvforce[2], mpold->velx,
-				mpold->vely, mpold->velz);
+		da1 *= powx(LIGHTSPEED, 2.0) * mvforce.x - mpold->vel.x * (mvforce * mpold->vel);
 		da1 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
 
 		long double da2 = gamma(mpold->getAbsSpeed());
-		da2 *= powx(LIGHTSPEED, 2.0) * mvforce[1]- mpold->vely * ProScaMV(mvforce[0], mvforce[1], mvforce[2], mpold->velx,
-				mpold->vely, mpold->velz);
+		da2 *= powx(LIGHTSPEED, 2.0) * mvforce.y - mpold->vel.y * (mvforce * mpold->vel);
 		da2 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
 
 		long double da3 = gamma(mpold->getAbsSpeed());
-		da3 *= powx(LIGHTSPEED, 2.0) * mvforce[2]- mpold->velz * ProScaMV(mvforce[0], mvforce[1], mvforce[2], mpold->velx,
-				mpold->vely, mpold->velz);
+		da3 *= powx(LIGHTSPEED, 2.0) * mvforce.z - mpold->vel.z * (mvforce * mpold->vel);
 		da3 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
 		//debugout("calcAcc() -  Acceleration (a1,a2,a3): "+da1+","+da2+","+da3);
 
@@ -225,16 +207,12 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		debugout(" calcAcc() - da2:", da2, 5);
 		debugout(" calcAcc() - da3:", da3, 5);
 
-		long double mva[] = { da1, da2, da3 };
-		long double deltav[] = { 0.0, 0.0, 0.0 };
+		mdv mva(da1, da2, da3);
+		mdv deltav(0);
 
-		deltav[0] = mva[0] * dtime_step;
-		deltav[1] = mva[1] * dtime_step;
-		deltav[2] = mva[2] * dtime_step;
+		deltav = mva * dtime_step;
 
-		debugout(" calcAcc() - deltav x:", deltav[0], 5);
-		debugout(" calcAcc() - deltav y:", deltav[1], 5);
-		debugout(" calcAcc() - deltav z:", deltav[2], 5);
+		debugout(" calcAcc() - deltav: ", deltav, 5);
 		debugout(" calcAcc() - abs(deltav)+mpold->getAbsSpeed()=", abs(deltav)+mpold->getAbsSpeed(), 5);
 		//debugout("calcAcc() -  Delta-v (dv1,dv2,dv3): "+deltav.x1+","+deltav.x2+","+deltav.x3);
 
@@ -276,9 +254,9 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//calculates the delta-s (ds = v * dtime_step)
 		//converts mvspeed mdvector to mlvector
 		//FIX requ?
-		mlvds[0] = toLong(mpnew->velx * dtime_step);
-		mlvds[1] = toLong(mpnew->vely * dtime_step);
-		mlvds[2] = toLong(mpnew->velz * dtime_step);
+		mlvds[0] = toLong(mpnew->vel.x * dtime_step);
+		mlvds[1] = toLong(mpnew->vel.y * dtime_step);
+		mlvds[2] = toLong(mpnew->vel.z * dtime_step);
 		//mlvds = MVMath.ProMVNum(MVMath.ConvertToL(mpold.getMDVSpeed()),dtime_step);
 		//debugout("calcAcc() -  |mdv-v|,v1,v2,v3: "+mpold.getMDVSpeed().abs()+","+mpold.getMDVSpeed().x1+","+mpold.getMDVSpeed().x2+","+mpold.getMDVSpeed().x3);
 		//debugout("calcAcc() -  |mlv-v|,v1,v2,v3: "+MVMath.ConvertToL(mpold.getMDVSpeed()).abs()+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x1+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x2+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x3);
@@ -349,9 +327,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		std::cout << "  ID: " << (*j)->id << ", ";
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
-		std::cout << "  velx: " << (*j)->velx << ", ";
-		std::cout << "  vely: " << (*j)->vely << ", ";
-		std::cout << "  velz: " << (*j)->velz << ", ";
+		std::cout << "  vel: " << (*j)->vel << ", ";
 		std::cout << "  posx: " << (*j)->posx << ", ";
 		std::cout << "  posy: " << (*j)->posy << ", ";
 		std::cout << "  posz: " << (*j)->posz << std::endl;
@@ -393,36 +369,24 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 	//debugout("Collision! Object "+mpsurvive.id+" ("+mpsurvive.getRadius()+") and Object "+mpkill.id+"/kill ("+mpkill.getRadius()+") collided. New radius: "+dradius);
 
 	//new momentum (=impuls)
-	long double dmomx_surv = mpsurvive->velx * mpsurvive->getSRTMass();
-	long double dmomy_surv = mpsurvive->vely * mpsurvive->getSRTMass();
-	long double dmomz_surv = mpsurvive->velz * mpsurvive->getSRTMass();
-
-	long double dmomx_kill = mpkill->velx * mpkill->getSRTMass();
-	long double dmomy_kill = mpkill->vely * mpkill->getSRTMass();
-	long double dmomz_kill = mpkill->velz * mpkill->getSRTMass();
-
-	long double dmomx_all = dmomx_surv + dmomx_kill;
-	long double dmomy_all = dmomy_surv + dmomy_kill;
-	long double dmomz_all = dmomz_surv + dmomz_kill;
+	mdv dmom_surv = mpsurvive->vel * mpsurvive->getSRTMass();
+	mdv dmom_kill = mpkill->vel * mpkill->getSRTMass();
+	mdv dmom_all = dmom_surv + dmom_kill;
 
 	//JAVA
 	//MDVector mdvmoment1 = MVMath.ProMVNum(mpsurvive.getMDVSpeed(), mpsurvive.getSRTMass());	//momentum = gamma*absmass*speed
 	//MDVector mdvmoment2 = MVMath.ProMVNum(mpkill.getMDVSpeed(), mpkill.getSRTMass());	//momentum = gamma*absmass*speed
 	//MDVector mdvmoment = MVMath.AddMV(mdvmoment1, mdvmoment2);
 
-	long double dfactora = ProScaMV(dmomx_all, dmomy_all, dmomz_all); //(momentum1+momentum2)^2
+	long double dfactora = dmom_all * dmom_all; //(momentum1+momentum2)^2
 	long double dgamma3;
 	dgamma3 = LIGHTSPEED*LIGHTSPEED*powx(dmass, 2.0);
 	dgamma3 += dfactora;
 	dgamma3 = dfactora / dgamma3;
 	dgamma3 = sqrtx((long double)1.0 - dgamma3);
 
-	long double dspeedx_all = dmomx_all / dmass;
-	long double dspeedy_all = dmomy_all / dmass;
-	long double dspeedz_all = dmomz_all / dmass;
-	dspeedx_all *= dgamma3;
-	dspeedy_all *= dgamma3;
-	dspeedz_all *= dgamma3;
+	mdv dspeed_all = dmom_all / dmass;
+	dspeed_all *= dgamma3;
 
 	//JAVA
 	//mpsecspeed = MVMath.DivMVNum(mdvmoment, dmass); 	//gesamtv = gesamtimpuls / gesamtmasse
@@ -462,7 +426,7 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 
 	mpsurvive->setCoord(llposx_surv, llposy_surv, llposz_surv);
 	mpsurvive->setMass(dmass);
-	if (!mpsurvive->setSpeed(dspeedx_all, dspeedy_all, dspeedz_all)) {
+	if (!mpsurvive->setSpeed(dspeed_all)) {
 		//TODO FIX myController.flagcalc = false;
 		error = LIGHTSPEEDERROR;
 	}
@@ -595,9 +559,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  ID: " << (*j)->id << ", ";
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
-				std::cout << "  velx: " << (*j)->velx << ", ";
-				std::cout << "  vely: " << (*j)->vely << ", ";
-				std::cout << "  velz: " << (*j)->velz << ", ";
+				std::cout << "  vel: " << (*j)->vel << ", ";
 				std::cout << "  posx: " << (*j)->posx << ", ";
 				std::cout << "  posy: " << (*j)->posy << ", ";
 				std::cout << "  posz: " << (*j)->posz << std::endl;
@@ -627,9 +589,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  ID: " << (*k)->id << ", ";
 				std::cout << "  Mass: " << (*k)->mass << ", ";
 				std::cout << "  Radius: " << (*k)->radius << ", ";
-				std::cout << "  velx: " << (*k)->velx << ", ";
-				std::cout << "  vely: " << (*k)->vely << ", ";
-				std::cout << "  velz: " << (*k)->velz << ", ";
+				std::cout << "  vel: " << (*k)->vel << ", ";
 				std::cout << "  posx: " << (*k)->posx << ", ";
 				std::cout << "  posy: " << (*k)->posy << ", ";
 				std::cout << "  posz: " << (*k)->posz << std::endl;
@@ -672,9 +632,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  ID: " << (*j)->id << ", ";
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
-				std::cout << "  velx: " << (*j)->velx << ", ";
-				std::cout << "  vely: " << (*j)->vely << ", ";
-				std::cout << "  velz: " << (*j)->velz << ", ";
+				std::cout << "  vel: " << (*j)->vel << ", ";
 				std::cout << "  posx: " << (*j)->posx << ", ";
 				std::cout << "  posy: " << (*j)->posy << ", ";
 				std::cout << "  posz: " << (*j)->posz << std::endl;

@@ -14,6 +14,12 @@
 #endif
 */
 
+GravObject::GravObject(int i, long double m, long double r): id(i), mass(m), radius(r)  {
+	vel = mdv();
+	accx = accy = accz = 0;
+	posx = posy = posz = 0;
+}
+
 void GravObject::setCoord(long long x1, long long x2, long long x3) {
 	posx = x1;
 	posy = x2;
@@ -30,7 +36,7 @@ long double GravObject::getAbsMass() {
 }
 long double GravObject::getSRTMass() {
 	//falls der v-vektor (0|0|0) ist, ist auch v=0
-	if(velx == 0 && vely == 0 && velz == 0) 
+	if(vel == 0) 
 		return mass;
 		
 	return (mass * gamma(dabsspeed()) );
@@ -75,43 +81,24 @@ long double GravObject::drange(GravObject* mp2) {
 }
 
 long double GravObject::dabsspeed() {
-	long double dabsspeed = (velx * velx);
-	dabsspeed += (vely * vely);
-	dabsspeed += (velz * velz);
-	return sqrtx(dabsspeed);
+	return abs(vel);
 }	
 long double GravObject::getAbsSpeed() {
 	return dabsspeed();
 }
-bool GravObject::setSpeed(long double v1, long double v2, long double v3) {
-	if( sqrtx(powx(v1, 2.0) + powx(v2, 2.0) + powx(v3, 2.0)) > LIGHTSPEED)
+bool GravObject::setSpeed(mdv& v) {
+	if(abs(v) > LIGHTSPEED)
 		return false;
 	else {
-		velx = v1;
-		vely = v2;
-		velz = v3;
+		vel = v;
 		return true;
 	}
 }
-/*	NOT IN USE
-bool addSpeed(long double v1, long double v2, long double v3) {
-	if( sqrtx(powx(v1+velx, 2.0) + powx(v2+vely, 2.0) + powx(v3+velz, 2.0)) > LIGHTSPEED)
+bool GravObject::addSpeed(mdv& v) {
+	if(abs(vel + v) > LIGHTSPEED)
 		return false;
 	else {
-		velx += v1;
-		vely += v2;
-		velz += v3;
-		return true;
-	}
-}
-*/	
-bool GravObject::addSpeed(long double v[3]) {
-	if( sqrtx(powx(v[0]+velx, 2.0) + powx(v[1]+vely, 2.0) + powx(v[2]+velz, 2.0)) > LIGHTSPEED)
-		return false;
-	else {
-		velx += v[0];
-		vely += v[1];
-		velz += v[2];
+		vel += v;
 		return true;
 	}
 }

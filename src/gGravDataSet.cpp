@@ -188,7 +188,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity x
-						sstr >> obj->velx;
+						sstr >> obj->vel.x;
 						line.erase(fp, sp-fp); //cut line
 					} else {
 						debugout("loadFile() - Failure 11", 99);
@@ -200,7 +200,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity y
-						sstr >> obj->vely;
+						sstr >> obj->vel.y;
 						line.erase(fp, sp-fp); //cut line
 					} else {
 						debugout("loadFile() - Failure 12", 99);
@@ -212,7 +212,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity z
-						sstr >> obj->velz;
+						sstr >> obj->vel.z;
 						line.erase(fp, sp-fp); //cut line
 					} else {
 						debugout("loadFile() - Failure 13", 99);

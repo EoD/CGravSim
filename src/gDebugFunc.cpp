@@ -3,6 +3,7 @@
 //#include <fstream>
 
 #include "gDefines.h"
+#include "gDebugFunc.h"
 
 void debugout(std::string strdbg, int dbgprio) {
 #ifdef DEBUG
@@ -29,6 +30,18 @@ void debugout(std::string strdbg, int var, int dbgprio) {
 #endif
 }
 void debugout(std::string strdbg, long double var, int dbgprio) {
+#ifdef DEBUG
+	if (dbgprio > 100 || dbgprio < 0) {
+		dbgprio = 101;
+	}
+	if ( 101 - dbgprio <= DEBUG) {
+		const char* output = strdbg.c_str();
+		(std::cout).precision( DATAPRECISION );
+		std::cout << output << var << std::endl;
+	}
+#endif
+}
+void debugout(std::string strdbg, mdv& var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;

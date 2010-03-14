@@ -1,21 +1,23 @@
 #ifndef _INC_GRAVITY_GRAVOBJECT
 #define _INC_GRAVITY_GRAVOBJECT
 
+#include "gMathVec.h"
+
 class GravObject {
 public:
 	int id;
 	//int type;	//deprecated
 	long double mass;
 	long double radius;
-	long double velx;
-	long double vely;
-	long double velz;
+	mdv vel;
 	long long accx;
 	long long accy;
 	long long accz;
 	long long posx;
 	long long posy;
 	long long posz;
+
+	GravObject(int id=-1, long double mass=0., long double radius=0.);
 	
 	void setCoord(long long x1, long long x2, long long x3);
 	void addCoords(long long x[3]);
@@ -29,8 +31,8 @@ public:
 	long double drange(GravObject* mp2);
 	long double dabsspeed();
 	long double getAbsSpeed();
-	bool setSpeed(long double v1, long double v2, long double v3);
-	bool addSpeed(long double v[3]);
+	bool setSpeed(mdv& v);
+	bool addSpeed(mdv& v);
 	long double getVolume();
 	long double getSchwarzschildVolume();
 };

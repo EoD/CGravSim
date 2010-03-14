@@ -8,6 +8,9 @@ else
  ifeq ($(ARCH),x86_64)
   ARCH=amd64
  endif
+ ifeq ($(ARCH),i686)
+  ARCH=x86
+ endif
 endif
 
 DIR_SRC = src/
@@ -131,8 +134,8 @@ arch_sparc:
 
 arch_sparc64:
 	@make arch_sparc
-	@RELEASE=false ARCH=sparc make
-	@RELEASE=true ARCH=sparc make
+	@RELEASE=false ARCH=sparc64 make
+	@RELEASE=true ARCH=sparc64 make
 
 cleanarch:
 	@echo "Doing only some ${ARCH} architecture cleanup..."

@@ -60,7 +60,7 @@ int main(int argc, char* pArgs[]) {
 		}
 	}
 
-	int del = remove(FILE_PERCENT);
+	remove(FILE_PERCENT);
 #ifdef DEBUG
 	if (del != 0)
 		std::cout << "Remove operation 1 failed" << std::endl;
@@ -115,15 +115,20 @@ int main(int argc, char* pArgs[]) {
 #ifdef DEBUG
 		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
-		CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), dtime_step_default);
-		std::cout << std::endl << "Calculation finished!" << std::endl;
+		int error = CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), dtime_step_default);
+
+		std::cout << std::endl << "Calculation finished";
+		if(error != NOERROR)
+			std::cout << " with error " << error;
+
+		std::cout << "!" << std::endl;
 
 		//del = remove(FILE_PERCENT);
-		del = 1;
-
+		return error;
 	}
 	else {
 		std::cout << "Loading failed!" << std::endl;
+		return FILEERROR;
 	}
-	return 0;
+	return NOERROR;
 }

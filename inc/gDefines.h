@@ -60,6 +60,7 @@
  //static final double ZOOM = AE / (1.0E6) //the zoom of the main window
  #define RACCURACY Math.powx(10.0, 3.0) //Genauigkeit des radius-feldes (std: km=1000)
  */
+#define FILEERROR -2
 #define UNKNOWNERROR -1
 #define NOERROR 0
 #define LIGHTSPEEDERROR 1

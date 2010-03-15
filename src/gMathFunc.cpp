@@ -57,11 +57,11 @@ long double sqrtx(long double x) {
 }
 
 long double powx(long double x, long double y) {
-#ifdef WIN32
-	return powl(x,y);
-#else
-	return pow((long double)x,(long double) y);
-#endif
+	long double dtemp = 1.;
+	for(int i=0; i<(int)y; i++) {
+		dtemp *= x;
+	}
+	return dtemp;
 }
 
 long double gamma(long double v) {

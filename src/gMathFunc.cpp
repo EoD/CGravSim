@@ -4,24 +4,6 @@
 #include "gDebugFunc.h"
 #include "gMathFunc.h"
 
-//this function is, to prevent from converting x to x/LACCURACY
-long double toDouble(long double x) {
-	return x;
-}
-
-long double toDouble(long long x) {
-	long double dtemp = (long double)x / (long double)LACCURACY;
-	return dtemp;
-}
-
-long long toLong(long long x) {
-	return x;
-}
-long long toLong(long double x) {
-	long long dtemp = (long long)floor((x * (long double)LACCURACY)+0.5);
-	return dtemp;
-}
-
 long long sqrtx(long long x) {
 	int curLog = 32;
 	long long res = 0;
@@ -78,34 +60,4 @@ long double gamma(long double v) {
 
 	debugout("Gamma() - gamma=",(long double)dsqrt,5);
 	return (long double)dsqrt;
-}
-
-long double abs(long double x[], int size) {
-	long double y=0;
-	for (int i=0; i < size; i++) {
-		y += powx(x[i], 2.0);
-	}
-	return sqrtx(y);
-}
-long double abs(long double x[]) {
-	return abs(x, 3);
-}
-
-long double abs(long long x[]) {
-	//removed the old pure ll-code
-	//long long ltemp = (x[0] * x[0]);
-	//ltemp += (x[1] * x[1]);
-	//ltemp += (x[2] * x[2]);
-	//long double dltemp = sqrtx(ltemp);
-	
-	//i have no idea what i'm doing here ;)
-	//if(isnan(ltemp) || isnan(dltemp) || ltemp < 0 || dltemp < 0) {
-		//debugout("abs(ll) - d/ltemp is NaN"/*,ltemp*/,90);
-		long double dtemp = powx(toDouble(x[0]), 2.0);
-		dtemp += powx(toDouble(x[1]), 2.0);
-		dtemp += powx(toDouble(x[2]), 2.0);
-		return sqrtx(dtemp);
-	//}
-	//debugout("abs(ll) - ltemp is ok. dltemp=",dltemp,90);
-	//return dltemp;
 }

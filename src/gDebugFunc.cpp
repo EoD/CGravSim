@@ -65,6 +65,18 @@ void debugout(std::string strdbg, long long var, int dbgprio) {
 	}
 #endif
 }
+void debugout(std::string strdbg, mlv& var, int dbgprio) {
+#ifdef DEBUG
+	if (dbgprio > 100 || dbgprio < 0) {
+		dbgprio = 101;
+	}
+	if ( 101 - dbgprio <= DEBUG) {
+		const char* output = strdbg.c_str();
+		(std::cout).precision( DATAPRECISION );
+		std::cout << output << var << std::endl;
+	}
+#endif
+}
 
 void debugout(std::string strdbg, std::string var, int dbgprio) {
 #ifdef DEBUG

@@ -101,9 +101,7 @@ int main(int argc, char* pArgs[]) {
 				std::cout << "  Mass: " << (*j)->mass << std::endl;
 				std::cout << "  Radius: " << (*j)->radius << std::endl;
 				std::cout << "  vel: " << (*j)->vel << std::endl;
-				std::cout << "  posx: " << (*j)->posx << std::endl;
-				std::cout << "  posy: " << (*j)->posy << std::endl;
-				std::cout << "  posz: " << (*j)->posz << std::endl;
+				std::cout << "  pos: " << (*j)->pos << std::endl;
 //			}
 			count++;
 		}

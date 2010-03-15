@@ -13,14 +13,12 @@ public:
 	long long accx;
 	long long accy;
 	long long accz;
-	long long posx;
-	long long posy;
-	long long posz;
+	mlv pos;
 
 	GravObject(int id=-1, long double mass=0., long double radius=0.);
 	
-	void setCoord(long long x1, long long x2, long long x3);
-	void addCoords(long long x[3]);
+	void setCoord(mlv& x);
+	void addCoords(mlv& x);
 	long double getAbsMass();
 	long double getSRTMass();
 	void setMass(long double a);

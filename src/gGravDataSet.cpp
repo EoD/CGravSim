@@ -260,7 +260,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract position x
-						sstr >> obj->posx;
+						sstr >> obj->pos.x;
 						line.erase(fp, sp-fp); //cut line
 					} else {
 						debugout("loadFile() - Failure 17", 99);
@@ -272,7 +272,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract position y
-						sstr >> obj->posy;
+						sstr >> obj->pos.y;
 						line.erase(fp, sp-fp); //cut line
 					} else {
 						debugout("loadFile() - Failure 18", 99);
@@ -284,7 +284,7 @@ bool GravDataSet::loadFile(std::string file) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, line.length()-LINEDELIMNUM-fp); //extract position z and cut of "\n" at the end
-						sstr >> obj->posz;
+						sstr >> obj->pos.z;
 						line.clear(); //clear line
 					} else {
 						debugout("loadFile() - Failure 19", 99);

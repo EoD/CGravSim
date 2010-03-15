@@ -17,18 +17,14 @@
 GravObject::GravObject(int i, long double m, long double r): id(i), mass(m), radius(r)  {
 	vel = mdv();
 	accx = accy = accz = 0;
-	posx = posy = posz = 0;
+	pos = mlv();
 }
 
-void GravObject::setCoord(long long x1, long long x2, long long x3) {
-	posx = x1;
-	posy = x2;
-	posz = x3;
+void GravObject::setCoord(mlv& x) {
+	pos = x;
 }	
-void GravObject::addCoords(long long x[3]) {
-	posx += x[0];
-	posy += x[1];
-	posz += x[2];
+void GravObject::addCoords(mlv& x) {
+	pos += x;
 }
 
 long double GravObject::getAbsMass() {
@@ -73,11 +69,8 @@ long double GravObject::getSchwarzschildRadius() {
 
 long double GravObject::drange(GravObject* mp2) {
 	//long double drange = sqrtx(dx^2 + dy^2 + dz^2)
-	long double drange = powx(toDouble(mp2->posx - posx), 2.0) 
-		+ powx(toDouble(mp2->posy - posy), 2.0) 
-		+ powx(toDouble(mp2->posz - posz), 2.0);
 	//MLVector mlvrange = MVMath.SubMV(this.getCoordMLV(), mp2.getCoordMLV());	
-	return sqrtx(drange);
+	return abs((mdv)(mp2->pos - pos));
 }
 
 long double GravObject::dabsspeed() {

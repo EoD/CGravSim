@@ -44,7 +44,7 @@ void GravStep::add(GravObject* pgo) {
 GravObject* GravStep::addnew(GravObject* pgo) {
 	GravObject* newone = new GravObject(pgo->id, pgo->mass, pgo->radius);
 	newone->setSpeed(pgo->vel);
-	newone->setCoord(pgo->posx, pgo->posy,pgo->posz);
+	newone->setCoord(pgo->pos);
 	objects.push_back(newone);
 	debugout("GravStep::add - new Object added", 5);
 	numObjects++;
@@ -61,9 +61,7 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 			std::cout << "  Mass: " << (*j)->mass << ", ";
 			std::cout << "  Radius: " << (*j)->radius << ", ";
 			std::cout << "  vel: " << (*j)->vel << ", ";
-			std::cout << "  posx: " << (*j)->posx << ", ";
-			std::cout << "  posy: " << (*j)->posy << ", ";
-			std::cout << "  posz: " << (*j)->posz << std::endl;
+			std::cout << "  pos: " << (*j)->pos << std::endl;
 	}
 #endif
 	
@@ -91,9 +89,9 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 			ofs << (*i)->accx << DELIMDATA;
 			ofs << (*i)->accy << DELIMDATA;
 			ofs << (*i)->accz << DELIMDATA;
-			ofs << (*i)->posx << DELIMDATA;
-			ofs << (*i)->posy << DELIMDATA;
-			ofs << (*i)->posz << DELIMLINE;
+			ofs << (*i)->pos.x << DELIMDATA;
+			ofs << (*i)->pos.y << DELIMDATA;
+			ofs << (*i)->pos.z << DELIMLINE;
 		}
 	}
 	debugout("savetofile() - Step successfully saved!", 40);

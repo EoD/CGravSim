@@ -44,28 +44,22 @@ int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
 		}
 
 		//distance between objects
-		long long mlvdist[] = { 0, 0, 0 };
-		mlvdist[0] = mpsec->posx - mpmain->posx;
-		debugout("calcForce() - mlvdist[0]=", mlvdist[0], 5);
-		mlvdist[1] = mpsec->posy - mpmain->posy;
-		debugout("calcForce() - mlvdist[1]=", mlvdist[1], 5);
-		mlvdist[2] = mpsec->posz - mpmain->posz;
-		debugout("calcForce() - mlvdist[2]=", mlvdist[2], 5);
+		mlv mlvdist(0);
+		mlvdist = mpsec->pos - mpmain->pos;
+		debugout("calcForce() - mlvdist=", mlvdist, 5);
 
 		//halb-relativistische Gravitations-Kraftberechnung
 		//(in mehrere Einzelschritt zerlegt)
 
 		//absolute newtonian force
-		long double dforce = 0.0; // |Fg| = m1*m2*G
+		long double dforce = 0.0; // |Fg| = m1*m2*G/(pos2-pos1)^2
 		dforce = mpmain->getSRTMass();
 		debugout("calcForce() - dforce1=", dforce, 5);
 		dforce *= mpsec->getSRTMass();
 		debugout("calcForce() - dforce2=", dforce, 5);
 		dforce *= GRAVCONST;
 		debugout("calcForce() - dforce3=", dforce, 5);
-		dforce /= (powx(toDouble(mlvdist[0]), 2.0)
-			+ powx(toDouble(mlvdist[1]), 2.0)
-			+ powx(toDouble(mlvdist[2]), 2.0));
+		dforce /= (mdv)mlvdist * (mdv)mlvdist;
 		debugout("calcForce() - dforce4=", dforce, 5);
 
 		if (isnan(dforce)) {
@@ -81,10 +75,8 @@ int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
 		//mdvrquot calculated with MDVector because 'radius' is r / r^3
 		mdv mdvrquot(0);
 		//Converted from long (mm) to double (meter)
-		debugout("calcForce() - abs(mlvdist)=", abs(mlvdist), 5);
-		mdvrquot.x = toDouble(mlvdist[0]) / abs(mlvdist);
-		mdvrquot.y = toDouble(mlvdist[1]) / abs(mlvdist);
-		mdvrquot.z = toDouble(mlvdist[2]) / abs(mlvdist);
+		debugout("calcForce() - abs(mlvdist)=", abs((mdv)mlvdist), 5);
+		mdvrquot = (mdv)mlvdist / abs((mdv)mlvdist);
 		debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
 		//mdvrquot = MVMath.DivMVNum(MVMath.ConvertToD(mlvdist), MVMath.ConvertToD(mlvdist).abs()); 	// vec r / |r|
 		//debugout(" Mdvrquot.abs,r1,r2,r3: "+mdvrquot.abs()+","+mdvrquot.x1+","+mdvrquot.x2+","+mdvrquot.x3);
@@ -117,9 +109,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
 		std::cout << "  vel: " << (*j)->vel << ", ";
-		std::cout << "  posx: " << (*j)->posx << ", ";
-		std::cout << "  posy: " << (*j)->posy << ", ";
-		std::cout << "  posz: " << (*j)->posz << std::endl;
+		std::cout << "  pos: " << (*j)->pos << std::endl;
 		std::cout << " count: " << count++ << std::endl;
 
 		if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -162,9 +152,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 
 		//debugout("calcAcc() - Object added",15);
 
-		debugout("calcAcc() - old x=",mpold->posx,5);
-		debugout("calcAcc() - old y=",mpold->posy,5);
-		debugout("calcAcc() - old z=",mpold->posz,5);
+		debugout("calcAcc() - old (x,y,z)=",mpold->pos,5);
 		debugout("calcAcc() - ID: ", mpold->id, 5); //+": Old Coords(x1,x2,x3): "+mpold.mlvpos.x1+","+mpold.mlvpos.x2+","+mpold.mlvpos.x3);		
 
 
@@ -247,14 +235,12 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		}
 
 		//new function which produces new coords
-		long long mlvds[] = { 0, 0, 0 };
+		mlv mlvds(0);
 
 		//calculates the delta-s (ds = v * dtime_step)
 		//converts mvspeed mdvector to mlvector
 		//FIX requ?
-		mlvds[0] = toLong(mpnew->vel.x * dtime_step);
-		mlvds[1] = toLong(mpnew->vel.y * dtime_step);
-		mlvds[2] = toLong(mpnew->vel.z * dtime_step);
+		mlvds = (mlv)(mpnew->vel * dtime_step);
 		//mlvds = MVMath.ProMVNum(MVMath.ConvertToL(mpold.getMDVSpeed()),dtime_step);
 		//debugout("calcAcc() -  |mdv-v|,v1,v2,v3: "+mpold.getMDVSpeed().abs()+","+mpold.getMDVSpeed().x1+","+mpold.getMDVSpeed().x2+","+mpold.getMDVSpeed().x3);
 		//debugout("calcAcc() -  |mlv-v|,v1,v2,v3: "+MVMath.ConvertToL(mpold.getMDVSpeed()).abs()+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x1+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x2+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x3);
@@ -304,14 +290,10 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 }
 		 */
 		mpnew->addCoords(mlvds);
-		debugout("calcAcc() - mlvds[0]=",mlvds[0],5);
-		debugout("calcAcc() - mlvds[1]=",mlvds[1],5);
-		debugout("calcAcc() - mlvds[2]=",mlvds[2],5);
+		debugout("calcAcc() - mlvds=",mlvds,5);
 		//mp.mlvpos = MVMath.AddMV(mlvds, mp.mlvpos);
 		//debugout("calcAcc() - ID "+mpnew.id+": New Coords(x1,x2,x3): "+mpnew.mlvpos.x1+" , "+mpnew.mlvpos.x2+" , "+mpnew.mlvpos.x3);	
-		debugout("calcAcc() - new x=",mpnew->posx,5);
-		debugout("calcAcc() - new y=",mpnew->posy,5);
-		debugout("calcAcc() - new z=",mpnew->posz,5);
+		debugout("calcAcc() - new (x,y,z)=",mpnew->pos,5);
 	}
 	if(bkillloop)
 		return NULL;
@@ -326,9 +308,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		std::cout << "  Mass: " << (*j)->mass << ", ";
 		std::cout << "  Radius: " << (*j)->radius << ", ";
 		std::cout << "  vel: " << (*j)->vel << ", ";
-		std::cout << "  posx: " << (*j)->posx << ", ";
-		std::cout << "  posy: " << (*j)->posy << ", ";
-		std::cout << "  posz: " << (*j)->posz << std::endl;
+		std::cout << "  pos: " << (*j)->pos << std::endl;
 		count ++;
 
 		if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -401,20 +381,11 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 
 	long double dconst = (dvolumesurvive+dvolumekill) / 2.0;
 
-	long long llposx_surv = (long long)(mpsurvive->posx * (dvolumesurvive/ dconst));
-	long long llposy_surv = (long long)(mpsurvive->posy * (dvolumesurvive/ dconst));
-	long long llposz_surv = (long long)(mpsurvive->posz * (dvolumesurvive/ dconst));
-	long long llposx_kill = (long long)(mpkill->posx * (dvolumekill / dconst));
-	long long llposy_kill = (long long)(mpkill->posy * (dvolumekill / dconst));
-	long long llposz_kill = (long long)(mpkill->posz * (dvolumekill / dconst));
+	mlv llpos_surv = mpsurvive->pos * (long long)(dvolumesurvive/ dconst);
+	mlv llpos_kill = mpkill->pos * (long long)(dvolumekill / dconst);
 
-	llposx_surv += llposx_kill;
-	llposy_surv += llposy_kill;
-	llposz_surv += llposz_kill;
-
-	llposx_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
-	llposy_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
-	llposz_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
+	llpos_surv += llpos_kill;
+	llpos_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
 
 	//JAVA
 	//MLVector mlvcoordsur = MVMath.ProMVNum(mpsurvive.getCoordMLV(), dvolumesurvive/dconst);
@@ -422,7 +393,7 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 	//MLVector mlvnewcoord = MVMath.AddMV(mlvcoordsur, mlvcoordkil);
 	//mlvnewcoord = MVMath.DivMVNum(mlvnewcoord, (dvolumesurvive+dvolumekill)/dconst);
 
-	mpsurvive->setCoord(llposx_surv, llposy_surv, llposz_surv);
+	mpsurvive->setCoord(llpos_surv);
 	mpsurvive->setMass(dmass);
 	if (!mpsurvive->setSpeed(dspeed_all)) {
 		//TODO FIX myController.flagcalc = false;
@@ -558,9 +529,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
 				std::cout << "  vel: " << (*j)->vel << ", ";
-				std::cout << "  posx: " << (*j)->posx << ", ";
-				std::cout << "  posy: " << (*j)->posy << ", ";
-				std::cout << "  posz: " << (*j)->posz << std::endl;
+				std::cout << "  pos: " << (*j)->pos << std::endl;
 				count ++;
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
@@ -588,9 +557,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  Mass: " << (*k)->mass << ", ";
 				std::cout << "  Radius: " << (*k)->radius << ", ";
 				std::cout << "  vel: " << (*k)->vel << ", ";
-				std::cout << "  posx: " << (*k)->posx << ", ";
-				std::cout << "  posy: " << (*k)->posy << ", ";
-				std::cout << "  posz: " << (*k)->posz << std::endl;
+				std::cout << "  pos: " << (*k)->pos << std::endl;
 				count ++;
 
 				if((*k)->mass <= 0 || (*k)->radius <= 0) {
@@ -631,9 +598,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 				std::cout << "  Mass: " << (*j)->mass << ", ";
 				std::cout << "  Radius: " << (*j)->radius << ", ";
 				std::cout << "  vel: " << (*j)->vel << ", ";
-				std::cout << "  posx: " << (*j)->posx << ", ";
-				std::cout << "  posy: " << (*j)->posy << ", ";
-				std::cout << "  posz: " << (*j)->posz << std::endl;
+				std::cout << "  pos: " << (*j)->pos << std::endl;
 				count++;
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {

@@ -143,19 +143,15 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #ifdef _OPENMP
 	omp_set_num_threads(omp_get_num_procs() * omp_get_num_procs() / 2 + 1);
 #endif
-	bool blightspeederror = false;
+	bool bkillloop = false;
 
 	#pragma omp parallel for                                                                                  
 	for (std::vector<GravObject*>::size_type i = 0; i < vmpsinsert->objects.size() ; i++) {
 
 		//skip the for-loop if error has been reached	
-		if(blightspeederror) {
-#ifdef _OPENMP
-			continue;
-#else
-			break;
-#endif
-		}
+		#pragma omp flush (bkillloop)
+		if(bkillloop)
+			FORKILLER;
 
 		//debugout("calcAcc() - for Schleife Start");
 		GravObject* mpold = (vmpsinsert->objects)[i];
@@ -180,7 +176,8 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		error = calcForce(mpold, vmpsinsert, mvforce);
 		if(error != NOERROR) {
 			flagcalc = false;
-			return NULL;
+			bkillloop = true;
+			FORKILLER;
 		}
 
 		debugout(" calcAcc() - totalmvforce: ", mvforce, 5);
@@ -238,8 +235,9 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 			}
 			debugout("calcAcc() - dv+v0 > c => break. New dtime_step=", dtime_step, 10); //="+dtime_step);
 
-			blightspeederror = true;
-			#pragma omp flush (blightspeederror)
+			bkillloop = true;
+			#pragma omp flush (bkillloop)
+			FORKILLER;
 		}
 
 		//add dv to complete v
@@ -315,7 +313,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		debugout("calcAcc() - new y=",mpnew->posy,5);
 		debugout("calcAcc() - new z=",mpnew->posz,5);
 	}
-	if(blightspeederror)
+	if(bkillloop)
 		return NULL;
 
 #ifdef DEBUG

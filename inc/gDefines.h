@@ -73,4 +73,10 @@
 	extern bool flagcalc;
 #endif*/
 
+#ifdef _OPENMP
+ #define FORKILLER continue
+#else
+ #define FORKILLER break
+#endif
+
 #endif

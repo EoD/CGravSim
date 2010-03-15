@@ -45,7 +45,7 @@ DIR_OBJ = obj_${ARCH}_r/
 endif
 
 #Enable handling of OpenMP directives!
-#CFLAGS += -fopenmp
+CFLAGS += -fopenmp
 
 #Name of the executable:
 

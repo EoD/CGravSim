@@ -359,10 +359,10 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 	//Berechnung des neuen Radius' aus dem Volumen
 	long double temp = 3.0 * dvolume;
 	temp /= 4.0 * PI;
-	long double dradius = powx(temp , (1.0 / 3.0));
+	long double dradius = pow(temp , (long double)(1.0/3.0));
 
 	temp = 0;
-	//double dradius = powx((3.0*dvolume)/(4.0*PI), 1.0/3.0);	
+	//double dradius = pow((3.0*dvolume)/(4.0*PI), (long double)(1.0/3.0));	
 	//V=4/3*r^3*PI --> r = 3.sqrtx(3*V/PI/4)
 	//debugout("Collision! Object "+mpsurvive.id+" ("+mpsurvive.getRadius()+") and Object "+mpkill.id+"/kill ("+mpkill.getRadius()+") collided. New radius: "+dradius);
 

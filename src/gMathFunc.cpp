@@ -56,9 +56,9 @@ long double sqrtx(long double x) {
 #endif
 }
 
-long double powx(long double x, long double y) {
+long double powx(long double x, int y) {
 	long double dtemp = 1.;
-	for(int i=0; i<(int)y; i++) {
+	for(int i=0; i<y; i++) {
 		dtemp *= x;
 	}
 	return dtemp;

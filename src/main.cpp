@@ -60,7 +60,7 @@ int main(int argc, char* pArgs[]) {
 		}
 	}
 
-	remove(FILE_PERCENT);
+	int del = remove(FILE_PERCENT);
 #ifdef DEBUG
 	if (del != 0)
 		std::cout << "Remove operation 1 failed" << std::endl;

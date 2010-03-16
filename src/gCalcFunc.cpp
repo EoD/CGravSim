@@ -5,9 +5,6 @@
 #include <fstream>
 #include <cmath>
 #include <cfloat>
-#include "gDefines.h"
-//#include "gGravObject.h"
-//#include "gGravStep.h"
 
 /*
 #ifdef DEBUG
@@ -18,17 +15,14 @@
 #endif
 */
 
+#include "gDefines.h"
 #include "gCalcFunc.h"
 #include "gMathFunc.h"
 #include "gDebugFunc.h"
 
-int error = NOERROR;
-bool flagcalc = true;
-long double dtime_step = 0;
-
 //Berechnet die Kraft auf ein referenz objekt (mpmain)
 //Kraft entsteht durch grav-wirkung aller anderen
-int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
+int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
 	//MDVector mdvforcetotal = new MDVector(0,0,0);
 	mdvforcetotal = mdv(0);
 
@@ -97,7 +91,7 @@ int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
 	return NOERROR;
 }
 
-GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
+GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	//Vector<Masspoint> vmpsout = new Vector<Masspoint>();
 #ifdef DEBUG
 	std::vector<GravObject*>::reverse_iterator j;
@@ -326,7 +320,7 @@ GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	return vmpsout;
 }
 
-GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
+GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	debugout("Collision() - starting", 10);
 
 	long double dvolumesurvive = mpsurvive->getVolume();
@@ -402,7 +396,7 @@ GravObject* collision(GravObject* mpsurvive, GravObject* mpkill) {
 	mpsurvive->setRadius(dradius);
 	return mpsurvive;
 }
-GravStep* collisionCheck(GravStep* pgs_insert) {
+GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 	GravStep* pgs_output = new GravStep();
 	debugout("collisionCheck() - Starting. number of objects to check: ", pgs_insert->numObjects, 7);
 
@@ -486,7 +480,7 @@ GravStep* collisionCheck(GravStep* pgs_insert) {
 	return pgs_output;
 }
 
-bool checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
+bool calc::checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	//diese for-schleife dient nur daf�r, dass die berechnung exakt wird, falls ein objekt �ber dpercentage% c kommt
 	std::vector<GravObject*>::iterator i;
 	for (i = pgs_test->objects.begin(); i != pgs_test->objects.end(); ++i) {
@@ -499,9 +493,8 @@ bool checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	return false;
 }
 
-int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default) {
+int calc::master(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default) {
 
-	//TODO myCalculationView = new CalcView((int)(datacount/timecount), myController);
 	GravStep* pgs_current = NULL;
 	GravStep* pgs_temp = NULL;
 	long double dtime_sum = 0;
@@ -706,7 +699,7 @@ int CalcCode(std::string filename, GravStep* pgs_start, long double dtime_max, l
 	return error;
 }
 
-bool savepercentage(std::string file, int percent) {
+bool calc::savepercentage(std::string file, int percent) {
 #ifdef DEBUG
 	std::cout << "Write Percent#"<< percent << " to " << (std::string)file << std::endl;
 #else

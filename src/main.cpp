@@ -5,14 +5,13 @@
 #include <fstream>
 #include <vector>
 #include <cfloat>
-//using namespace std; 
 
 #define MAIN
 
 #include "gDefines.h"
 #include "gGravDataSet.h"
 #include "gDebugFunc.h"
-#include "gCalcFunc.h"
+#include "gCalc_interface.h"
 
 int main(int argc, char* pArgs[]) {
 	std::string filename;
@@ -113,7 +112,7 @@ int main(int argc, char* pArgs[]) {
 #ifdef DEBUG
 		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
-		int error = CalcCode(filename, *i, (long double)(pgdsStart->llnumSteps*pgdsStart->drTime), (long double)(pgdsStart->drTime), dtime_step_default);
+		int error = calc::master(filename, *i, pgdsStart->llnumSteps*pgdsStart->drTime, pgdsStart->drTime, dtime_step_default);
 
 		std::cout << std::endl << "Calculation finished";
 		if(error != NOERROR)

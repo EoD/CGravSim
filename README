@@ -1,0 +1,38 @@
+cgravsim v0.9
+
+A program to calculate gravitational effects with relativistic corrections!
+
+
+INSTALLATION
+
+  It's recommended that you use the frontend JGravSim.jar from
+
+	  http://jgravsim.eod.xmw.de/
+
+  Essentially you need nothing except for a properly prepared wpt file
+  (you should only have ONE step in the file) and the cgravsim executable.
+
+
+BUILDING
+
+  Usually you should use the following command in order to produce the best
+  executable for your system
+	
+	make auto
+
+  It is also possible to produce architecture specfic files and some other
+  funny stuff. Have a look at
+
+	make help
+
+
+USAGE
+
+  cgravsim --help
+  cgravsim [-h -v] [-t TIMESTEP] [FILENAME]
+ 
+
+
+For more information visit the homepage:
+
+	http://jgravsim.eod.xmw.de/

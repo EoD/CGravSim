@@ -9,6 +9,7 @@
 
 #define BVERSION 0.9
 #define FVERSION 1.8
+#define WPTVERSION 1
 
 #define FLAG_DEBUG1 "--version"
 #define FLAG_DEBUG2 "-v"

@@ -22,6 +22,7 @@ int main(int argc, char* pArgs[]) {
 		if( (std::string)pArgs[i] == FLAG_DEBUG1 || (std::string)pArgs[i] == FLAG_DEBUG2) {
 			std::cout << "Frontend: " << FVERSION << std::endl;
 			std::cout << "Backend : " << BVERSION << std::endl;
+			std::cout << "WPT     : " << WPTVERSION << std::endl;
 #ifdef DEBUG
 			std::cout << "Debug   : " << DEBUG << std::endl;
 #endif
@@ -30,7 +31,7 @@ int main(int argc, char* pArgs[]) {
 		else if( (std::string)pArgs[i] == FLAG_HELP1 || (std::string)pArgs[i] == FLAG_HELP2) {
 			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << std::endl;
 			std::cout << "USAGE: cgravsim [" << FLAG_HELP2 << " " << FLAG_DEBUG2 <<"] ["<< FLAG_TIME2 <<" TIMESTEP] [FILENAME]" << std::endl;
-			std::cout << "\t FILENAME has to be in the current WPT (v" << FVERSION << ") format" << std::endl;
+			std::cout << "\t FILENAME has to be in the current WPT (v" << WPTVERSION << ") format" << std::endl;
 			std::cout << "Arguments:" << std::endl;
 			std::cout << "  " << FLAG_HELP2  << ", " << FLAG_HELP1  << "\t\tdisplay this help" << std::endl;
 			std::cout << "  " << FLAG_DEBUG2 << ", " << FLAG_DEBUG1 << "\t\tprint version of backend and expected frontend" << std::endl;
@@ -79,9 +80,17 @@ int main(int argc, char* pArgs[]) {
 			dtime_step_default = (long double)(pgdsStart->drTime);
 		}
 
+		int version;
+		std::istringstream ssversion(pgdsStart->strVersion);
+		if(ssversion >> version) {
+			if(version != WPTVERSION)
+				std::cerr << "WARNING! wpt version doesn't match!" << std::endl;
+		} else
+			std::cerr << "WARNING! Can't read wpt version!" << std::endl;
+
 		std::cout << "Loading Finished!" << std::endl;
 		std::cout << "Version: " << pgdsStart->strVersion << " (expected Version: ";
-		std::cout << FVERSION;
+		std::cout << WPTVERSION;
 		std::cout << ")" << std::endl;
 		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << std::endl;
 		std::cout << "Save dTime: " << pgdsStart->drTime << std::endl;

@@ -338,7 +338,8 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	temp = 0;
 	//double dradius = pow((3.0*dvolume)/(4.0*PI), (long double)(1.0/3.0));	
 	//V=4/3*r^3*PI --> r = 3.sqrtx(3*V/PI/4)
-	//debugout("Collision! Object "+mpsurvive.id+" ("+mpsurvive.getRadius()+") and Object "+mpkill.id+"/kill ("+mpkill.getRadius()+") collided. New radius: "+dradius);
+	//std::cout << "Collision! Object " << mpsurvive->id << " (" << mpsurvive->getRadius() << ") and Object ";
+	//std::cout << mpkill->id << "/kill (" << mpkill->getRadius() << ") collided. New radius: " << dradius << std::endl;
 
 	//new momentum (=impuls)
 	mdv dmom_surv = mpsurvive->vel * mpsurvive->getSRTMass();
@@ -375,8 +376,13 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 
 	long double dconst = (dvolumesurvive+dvolumekill) / 2.0;
 
-	mlv llpos_surv = mpsurvive->pos * (long long)(dvolumesurvive/ dconst);
-	mlv llpos_kill = mpkill->pos * (long long)(dvolumekill / dconst);
+	//std::cout << " dconst =" << dconst << ", dvolumesurvive=" << dvolumesurvive << ", dvolumekill=" << dvolumekill << std::endl;
+
+	mlv llpos_surv = mpsurvive->pos * (dvolumesurvive/ dconst);
+	mlv llpos_kill = mpkill->pos * (dvolumekill / dconst);
+
+	//std::cout << " llpos_surv=" << llpos_surv << ", mpsurvive->pos =" << mpsurvive->pos << ", (dvolumesurvive/ dconst)=" << (double)(dvolumesurvive/ dconst) << std::endl;
+	//std::cout << " llpos_kill=" << llpos_kill << ", mpkill->pos =" << mpkill->pos << ", (dvolumekill/ dconst)=" << (double)(dvolumekill/ dconst) << std::endl;
 
 	llpos_surv += llpos_kill;
 	llpos_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);

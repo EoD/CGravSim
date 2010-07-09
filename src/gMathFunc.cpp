@@ -61,3 +61,10 @@ long double gamma(long double v) {
 	debugout("Gamma() - gamma=",(long double)dsqrt,5);
 	return (long double)dsqrt;
 }
+
+/* Some special handling of mlv*mdv */
+mlv operator*(const mlv& mv1, const long double d) {
+	return mlv(	(mv1.x * (d * LACCURACY)) / LACCURACY, 
+			(mv1.y * (d * LACCURACY)) / LACCURACY, 
+			(mv1.z * (d * LACCURACY)) / LACCURACY);
+}

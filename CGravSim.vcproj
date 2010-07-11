@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="Gravity_Simulation_Backend"
+	Name="CGravSim"
 	ProjectGUID="{C808973C-EE73-41F0-9AE5-6A4E50F9CAD2}"
-	RootNamespace="Gravity_Simulation_Backend"
+	RootNamespace="CGravSim"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>

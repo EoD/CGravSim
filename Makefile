@@ -35,7 +35,7 @@ OPTFLAGS = -mtune=generic
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
 #Enable highest debuglevel, profiling, and display every single warning
 Releasename=dbg
-CFLAGS = -O2 -g3 -Wall -D_DEBUG32
+CFLAGS = -O2 -g3 -Wall -D_DEBUG
 DIR_OBJ = obj_${ARCH}_d/
 else
 #turn on some optimization

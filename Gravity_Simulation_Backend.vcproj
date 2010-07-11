@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="Gravity_Simulation_Backend"
 	ProjectGUID="{C808973C-EE73-41F0-9AE5-6A4E50F9CAD2}"
 	RootNamespace="Gravity_Simulation_Backend"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
 			Name="Win32"
+		/>
+		<Platform
+			Name="x64"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -17,11 +21,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="exe"
-			IntermediateDirectory="tmp"
+			OutputDirectory=".\exe"
+			IntermediateDirectory=".\obj_win32_d"
 			ConfigurationType="1"
-			UseOfMFC="1"
-			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -40,19 +42,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="./inc"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				AdditionalIncludeDirectories=".\inc"
 				RuntimeLibrary="1"
-				OpenMP="true"
-				UsePrecompiledHeader="0"
-				ObjectFile="obj_d\"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
+				OpenMP="false"
+				WarningLevel="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -66,10 +59,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\cgravsimdbg_x86.exe"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -90,18 +79,14 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="exe"
-			IntermediateDirectory="tmp"
+			Name="Debug|x64"
+			OutputDirectory=".\exe"
+			IntermediateDirectory=".\obj_win64_d"
 			ConfigurationType="1"
-			UseOfMFC="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -120,16 +105,72 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./inc"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;"
-				RuntimeLibrary="0"
-				OpenMP="true"
-				UsePrecompiledHeader="0"
-				ObjectFile="obj_r\"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				ForcedIncludeFiles=""
+				AdditionalIncludeDirectories=".\inc"
+				RuntimeLibrary="1"
+				OpenMP="false"
+				WarningLevel="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\cgravsimdbg_x64.exe"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\exe"
+			IntermediateDirectory=".\obj_win32"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".\inc"
+				OpenMP="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -143,12 +184,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\cgravsim_x86.exe"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -169,18 +204,14 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
-			Name="Both|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			Name="Release|x64"
+			OutputDirectory=".\exe"
+			IntermediateDirectory=".\obj_win64"
 			ConfigurationType="1"
-			UseOfMFC="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -199,19 +230,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="./inc"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				OpenMP="true"
-				UsePrecompiledHeader="0"
-				ObjectFile=""
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=".\inc"
+				OpenMP="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -224,11 +245,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\cgravsimdbg_x86.exe"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
+				OutputFile="$(OutDir)\cgravsim_x64.exe"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -247,9 +264,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -264,6 +278,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\inc\gCalc_interface.h"
+				>
+			</File>
 			<File
 				RelativePath=".\inc\gCalcFunc.h"
 				>
@@ -292,12 +310,10 @@
 				RelativePath=".\inc\gMathFunc.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath=".\inc\gMathVec.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"

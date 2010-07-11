@@ -2,7 +2,7 @@
 #define _INC_GRAVITY_DEFINES
 
 
-#ifdef _DEBUG32
+#ifdef _DEBUG
  #define DEBUG 40
 #endif
 
@@ -25,7 +25,7 @@
 
 #define FILE_PERCENT "percent.tmp"
 
-#ifdef WIN32
+#if defined _WIN32 || defined _WIN64
  #define DELIMLINE "\n"
  #define LINEDELIMNUM	0	//this comes from the fact, that windows recognizes "CR LN" as _one_ linebreak
 #else

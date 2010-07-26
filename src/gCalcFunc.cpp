@@ -326,7 +326,6 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	long double dvolumesurvive = mpsurvive->getVolume();
 	long double dvolumekill = mpkill->getVolume();
 
-	long double dmass = mpsurvive->getAbsMass() + mpkill->getAbsMass(); //die massen werden addiert
 	long double dvolume = dvolumesurvive + dvolumekill; //die volumina (nicht die Radien!) werden addiert
 	//debugout("Collision! Object "); //+mpsurvive.id+" ("+mpsurvive.getVolume()+") and Object "+mpkill.id+"/kill ("+mpkill.getVolume()+") collided. New volume: "+dvolume);
 
@@ -342,9 +341,7 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	//std::cout << mpkill->id << "/kill (" << mpkill->getRadius() << ") collided. New radius: " << dradius << std::endl;
 
 	//new momentum (=impuls)
-	mdv dmom_surv = mpsurvive->vel * mpsurvive->getSRTMass();
-	mdv dmom_kill = mpkill->vel * mpkill->getSRTMass();
-	mdv dmom_all = dmom_surv + dmom_kill;
+	mdv dmom_all = mpkill->getImpulse() + mpsurvive->getImpulse();
 
 	//JAVA
 	//MDVector mdvmoment1 = MVMath.ProMVNum(mpsurvive.getMDVSpeed(), mpsurvive.getSRTMass());	//momentum = gamma*absmass*speed
@@ -352,6 +349,13 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	//MDVector mdvmoment = MVMath.AddMV(mdvmoment1, mdvmoment2);
 
 	long double dfactora = dmom_all * dmom_all; //(momentum1+momentum2)^2
+	/*
+	 * The resulting mass of a total inelastic collision between relavistic
+	 * objects is m = sqrt( ( E1 + E2 )^2 / c^2 - (p1 + p2)^2 ) / c
+	 */
+	long double E1 = mpsurvive->getEnergy(), E2 = mpkill->getEnergy();
+	long double dmass = sqrt( (E1+E2)*(E1+E2) / (LIGHTSPEED*LIGHTSPEED) - dfactora) / LIGHTSPEED;
+	
 	long double dgamma3;
 	dgamma3 = LIGHTSPEED*LIGHTSPEED*powx(dmass, 2.0);
 	dgamma3 += dfactora;

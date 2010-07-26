@@ -104,6 +104,19 @@ long double GravObject::getSchwarzschildVolume() {
 	return (4.0/3.0*powx(getSchwarzschildRadius(), 3.0))*PI;
 }
 
+/** Returns the relativistic impulse for the masspoint */
+mdv GravObject::getImpulse() {
+	return vel * getSRTMass();	//momentum = gamma*absmass*speed
+}
+
+/** Returns the relativistic energy for the masspoint */
+long double GravObject::getEnergy() {
+	double Energy = mass * LIGHTSPEED * LIGHTSPEED;
+	Energy *= Energy;
+	Energy += LIGHTSPEED * LIGHTSPEED + (getImpulse() * getImpulse());
+	return sqrt(Energy);
+}
+
 /*
 #ifdef DEBUG_INC_GRAVITY_GRAVOBJECT
 #define DEBUG DEBUG_INC_GRAVITY_GRAVOBJECT

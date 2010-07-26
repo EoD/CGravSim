@@ -33,6 +33,8 @@ public:
 	bool addSpeed(mdv& v);
 	long double getVolume();
 	long double getSchwarzschildVolume();
+	mdv getImpulse();
+	long double getEnergy();
 };
 
 #endif

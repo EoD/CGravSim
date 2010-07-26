@@ -19,6 +19,6 @@ public:
 	void empty();
 	void add(GravObject* pgo);
 	GravObject* addnew(GravObject* pgo);
-	bool savetofile(std::ofstream& ofs, int stepid);
+	bool savetofile(std::ofstream& ofs, const unsigned int stepid);
 };
 #endif

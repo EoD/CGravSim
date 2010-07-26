@@ -51,7 +51,7 @@ GravObject* GravStep::addnew(GravObject* pgo) {
 	return newone;
 }
 
-bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
+bool GravStep::savetofile(std::ofstream& ofs, const unsigned int stepid) {
 #ifdef DEBUG
 	std::vector<GravObject*>::iterator j;
 	std::cout << "  savetofile Objectlist:" << std::endl;
@@ -70,7 +70,7 @@ bool GravStep::savetofile(std::ofstream& ofs, int stepid) {
 		return false;
 	}
 	
-	ofs << "#" << stepid+1 << ";" << numObjects << DELIMLINE;
+	ofs << "#" << stepid << ";" << numObjects << DELIMLINE;
 	ofs.precision(DATAPRECISION);
 	
 	//Add Data of each object to datafile

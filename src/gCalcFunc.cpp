@@ -504,7 +504,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 	GravStep* pgs_current = NULL;
 	GravStep* pgs_temp = NULL;
 	long double dtime_sum = 0;
-	long double dtime_smallsum = 0;
+	unsigned int lstep = 0;
 	/*long double*/dtime_step = dtime_step_default;
 	long double dtime_exactstep = dtime_step/powx(10.0, 3.0);
 	error = NOERROR;
@@ -659,14 +659,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			debugout("calcMain() - calcAcc hat NULL zurückgegeben.", 10); // Neues dtime_step="+dtime_step+", dtsum="+dtsum);
 			continue;
 		} else {
-			dtime_smallsum += dtime_step;
+			dtime_sum += dtime_step;
 			debugout("calcMain() - calcAcc hat nicht NULL zurückgegeben.", 10); //(size="+vmps_temp.size()+", dtime_step="+dtime_step+"). Neues dtsum="+dtsum);
 		}
 
-		if (dtime_smallsum >= dtime_save) {
-			debugout("calcMain() - dtsmallsum >= timestep", 10); //: "+dtsmallsum+">="+timestep);
-			//TODO FIX myModel.AddStep(vmps_temp);	//save data to file
-			pgs_temp->savetofile(ofs_temp, (int)(dtime_sum/dtime_save));
+		if (dtime_sum >= lstep*dtime_save) {
+			debugout("calcMain() - dtime_sum >= lstep*dtime_save", 10);
+			pgs_temp->savetofile(ofs_temp, ++lstep);
 			//to be able to communicate with the frontend
 			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
@@ -676,20 +675,11 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 				}
 			}
 
-
-			dtime_sum += dtime_smallsum;
-			dtime_smallsum = 0;
 			//debugout("calcMain() - dtsum ="+dtsum+", Datacount="+datacount);
 			dtime_step = dtime_step_default; //reset to old step size
 			debugout("calcMain() - end, dtime_step = dtime_step_default = ", dtime_step, 10); // ="+dtime_step+"="+dtime_step_default);
-			//myCalculationView.step();
 		} else
-			debugout("dtsmallsum < timestep", 7); // "+dtsmallsum+" < "+timestep+".dtsum="+dtsum);
-
-		//debugout("calcMain() -d currentsize="+vmps_current.size()+", tempsize="+vmps_temp.size());			
-		//vmps_current.removeAllElements();
-		//debugout("calcMain() -e currentsize="+vmps_current.size()+", tempsize="+vmps_temp.size());
-		//vmps_current.addAll(vmps_temp);	   
+			debugout("dtime_sum < lstep*dtime_save", 7);
 	}
 
 	if (flagcalc == false) {

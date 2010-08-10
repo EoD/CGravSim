@@ -86,9 +86,6 @@ bool GravStep::savetofile(std::ofstream& ofs, const unsigned int stepid) {
 			ofs << (*i)->vel.x << DELIMDATA;
 			ofs << (*i)->vel.y << DELIMDATA;
 			ofs << (*i)->vel.z << DELIMDATA;
-			ofs << (*i)->accx << DELIMDATA;
-			ofs << (*i)->accy << DELIMDATA;
-			ofs << (*i)->accz << DELIMDATA;
 			ofs << (*i)->pos.x << DELIMDATA;
 			ofs << (*i)->pos.y << DELIMDATA;
 			ofs << (*i)->pos.z << DELIMLINE;

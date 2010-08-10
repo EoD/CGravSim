@@ -16,7 +16,6 @@
 
 GravObject::GravObject(int i, long double m, long double r): id(i), mass(m), radius(r)  {
 	vel = mdv();
-	accx = accy = accz = 0;
 	pos = mlv();
 }
 

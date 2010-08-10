@@ -223,42 +223,6 @@ bool GravDataSet::loadFile(std::string file) {
 					if (sp != std::string::npos) {
 						sstr.str(""); // empty stream
 						sstr.clear(); // clear Flags
-						sstr << line.substr(fp, sp-fp); //extract acceleration x
-						sstr >> obj->accx;
-						line.erase(fp, sp-fp); //cut line
-					} else {
-						debugout("loadFile() - Failure 14", 99);
-						return false;
-					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
-					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
-						sstr.clear(); // clear Flags
-						sstr << line.substr(fp, sp-fp); //extract acceleration y
-						sstr >> obj->accy;
-						line.erase(fp, sp-fp); //cut line
-					} else {
-						debugout("loadFile() - Failure 15", 99);
-						return false;
-					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
-					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
-						sstr.clear(); // clear Flags
-						sstr << line.substr(fp, sp-fp); //extract acceleration z
-						sstr >> obj->accz;
-						line.erase(fp, sp-fp); //cut line
-					} else {
-						debugout("loadFile() - Failure 16", 99);
-						return false;
-					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
-					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
-						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract position x
 						sstr >> obj->pos.x;
 						line.erase(fp, sp-fp); //cut line

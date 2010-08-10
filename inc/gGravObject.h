@@ -10,9 +10,6 @@ public:
 	long double mass;
 	long double radius;
 	mdv vel;
-	long long accx;
-	long long accy;
-	long long accz;
 	mlv pos;
 
 	GravObject(int id=-1, long double mass=0., long double radius=0.);

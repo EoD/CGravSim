@@ -61,13 +61,20 @@
  //static final double ZOOM = AE / (1.0E6) //the zoom of the main window
  #define RACCURACY Math.powx(10.0, 3.0) //Genauigkeit des radius-feldes (std: km=1000)
  */
-#define FILEERROR -2
-#define UNKNOWNERROR -1
+
 #define NOERROR 0
-#define LIGHTSPEEDERROR 1
-#define LONGLIMIT 2
-#define DOUBLELIMIT 3
-#define NANERROR 4
+
+#define ERROR_UNKNOWN	-1
+#define ERROR_FILE_IN	1
+#define ERROR_FILE_OUT	2
+#define ERROR_CALC	3
+
+#define ERROR_CALC_UNKNOWN	-1
+#define ERROR_CALC_DATA		1
+#define ERROR_CALC_LIGHTSPEED	2
+#define ERROR_CALC_LIMIT_LONG	3
+#define ERROR_CALC_LIMIT_DOUBLE	4
+#define ERROR_CALC_NAN		5
 
 //Nur um sicher zu gehen das alle anderen sourcedateien die globalen variablen der main ebenfalls haben
 /*#ifndef MAIN

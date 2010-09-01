@@ -130,11 +130,11 @@ int main(int argc, char* pArgs[]) {
 		std::cout << "!" << std::endl;
 
 		//del = remove(FILE_PERCENT);
-		return error;
+		return error==NOERROR?NOERROR:ERROR_CALC;
 	}
 	else {
 		std::cout << "Loading failed!" << std::endl;
-		return FILEERROR;
+		return ERROR_FILE_IN;
 	}
 	return NOERROR;
 }

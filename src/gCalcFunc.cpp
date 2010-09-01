@@ -58,7 +58,7 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 
 		if (isnan(dforce)) {
 			debugout("calcForce() - dforce is NaN - ERROR", 99);
-			return NANERROR;
+			return ERROR_CALC_NAN;
 		}
 		//debugout("calcForce() - relm1,relm2 = dforce: "+mpmain.getSRTMass()+","+mpsec.getSRTMass()+" = "+dforce);
 		//debugout("calcForce() - mpsec: ID="+mpsec.id+", absmass="+mpsec.getAbsMass()+", absspeed="+mpsec.getSpeed());
@@ -207,7 +207,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 				if (dtime_step <= 10.0*DOUBLE_MIN) { //TODO FIX REQUIRED java.lang.Double.MIN_VALUE) {
 					debugout("calcAcc - ERROR double-limit reached!");
 					flagcalc = false;
-					error = DOUBLELIMIT;
+					error = ERROR_CALC_LIMIT_DOUBLE;
 					break;
 				}
 				dtime_step /= 10.0;
@@ -225,7 +225,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//add dv to complete v
 		if (!mpnew->addSpeed(deltav)) {
 			flagcalc = false;
-			error = LIGHTSPEEDERROR;
+			error = ERROR_CALC_LIGHTSPEED;
 		}
 
 		//new function which produces new coords
@@ -253,7 +253,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 if(abs(limit) - abs(mlvds[0]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit1 reached, break. Object ID: ",mpold->id,99);
-		 error = LONGLIMIT;
+		 error = ERROR_CALC_LIMIT_LONG;
 		 return vmpsout;
 		 }
 
@@ -266,7 +266,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 if(abs(limit) - abs(mlvds[1]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit2 reached, break. Object ID: ",mpold->id,99);
-		 error = LONGLIMIT;
+		 error = ERROR_CALC_LIMIT_LONG;
 		 return vmpsout;
 		 }
 
@@ -279,7 +279,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 if(abs(limit) - abs(mlvds[2]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit3 reached, break. Object ID: ",mpold->id,99);
-		 error = LONGLIMIT;
+		 error = ERROR_CALC_LIMIT_LONG;
 		 return vmpsout;
 		 }
 		 */
@@ -401,7 +401,7 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	mpsurvive->setMass(dmass);
 	if (!mpsurvive->setSpeed(dspeed_all)) {
 		//TODO FIX myController.flagcalc = false;
-		error = LIGHTSPEEDERROR;
+		error = ERROR_CALC_LIGHTSPEED;
 	}
 	mpsurvive->setRadius(dradius);
 	return mpsurvive;
@@ -450,7 +450,7 @@ GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 			if ((*j)->id == (*i)->id) {
 				debugout("collisionCheck() - hmmmm. ID: ", mpi->id, 10);
 				flagcalc = false;
-				error = UNKNOWNERROR;
+				error = ERROR_CALC_UNKNOWN;
 				return NULL;
 			}
 
@@ -537,13 +537,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR1",99);
-					return 0;
+					return ERROR_CALC_DATA;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR1, help",99);
 				flagcalc = false;
-				return 0;
+				return ERROR_CALC_DATA;
 			}
 #endif
 			//debugout("CalcCode - First Collision Check starting",15);
@@ -565,13 +565,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*k)->mass <= 0 || (*k)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR2",99);
-					return 0;
+					return ERROR_CALC_DATA;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR2, help",99);
 				flagcalc = false;
-				return 0;
+				return ERROR_CALC_DATA;
 			}
 #endif
 			//pgs_start->empty();
@@ -584,7 +584,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 				pgs_start = NULL;
 			} else {
 				debugout("CalcCode - ERROR, undefined. Line555", 99);
-				return 0;
+				return ERROR_CALC_UNKNOWN;
 			}
 			debugout("CalcCode - First Collision Check ending", 5);
 			pgs_temp = new GravStep();
@@ -606,13 +606,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR3",99);
-					return 0;
+					return ERROR_CALC_DATA;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR3, help",99);
 				flagcalc = false;
-				return 0;
+				return ERROR_CALC_DATA;
 			}
 #endif
 			debugout("CalcCode - Collision Check starting", 7);
@@ -629,7 +629,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			debugout("CalcCode() - temp==NULL, start==NULL - seems that new dt was found", 20);
 			//TODO Remove for final
 			if(pgs_current->numObjects <= 1) {
-				return 0;
+				return error;
 			}
 		}
 
@@ -674,7 +674,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
 				if(!savepercentage(FILE_PERCENT,++percent)) {
-					error = UNKNOWNERROR;
+					error = ERROR_FILE_OUT;
 					break;
 				}
 			}
@@ -692,7 +692,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 	debugout("calcMain - Quit - Roger and out", 15);
 	if(!savepercentage(FILE_PERCENT, 100))
-		error = UNKNOWNERROR;
+		error = ERROR_FILE_OUT;
 
 	ofs_temp.close();
 	delete pgs_temp;

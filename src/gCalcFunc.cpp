@@ -20,7 +20,7 @@
 #include "gMathFunc.h"
 #include "gDebugFunc.h"
 
-int calc::error = NOERROR;
+int calc::error = ERROR_NONE;
 bool calc::flagcalc = true;
 long double calc::dtime_step = 0;
 
@@ -92,7 +92,7 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 	}
 	//debugout("calcForce() - |mvforcesum|,x1,x2,x3: "+mdvforcetotal.abs()+","+mdvforcetotal.x1+","+mdvforcetotal.x2+","+mdvforcetotal.x3);
 
-	return NOERROR;
+	return ERROR_NONE;
 }
 
 GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
@@ -160,7 +160,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//MDVector mvforce = new MDVector(0,0,0);		
 		mdv mvforce(0);
 		error = calcForce(mpold, vmpsinsert, mvforce);
-		if(error != NOERROR) {
+		if(error != ERROR_NONE) {
 			flagcalc = false;
 			bkillloop = true;
 			FORKILLER;
@@ -509,7 +509,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 	unsigned int lstep = 0;
 	/*long double*/dtime_step = dtime_step_default;
 	long double dtime_exactstep = dtime_step/powx(10.0, 3.0);
-	error = NOERROR;
+	error = ERROR_NONE;
 	int percent = 0;
 	debugout("CalcCode() - Vars initialized, starting", 15);
 	savepercentage(FILE_PERCENT,percent);

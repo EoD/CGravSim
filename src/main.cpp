@@ -124,17 +124,17 @@ int main(int argc, char* pArgs[]) {
 		int error = calc::master(filename, *i, pgdsStart->llnumSteps*pgdsStart->drTime, pgdsStart->drTime, dtime_step_default);
 
 		std::cout << std::endl << "Calculation finished";
-		if(error != NOERROR)
+		if(error != ERROR_NONE)
 			std::cout << " with error " << error;
 
 		std::cout << "!" << std::endl;
 
 		//del = remove(FILE_PERCENT);
-		return error==NOERROR?NOERROR:ERROR_CALC;
+		return error==ERROR_NONE?0:1;
 	}
 	else {
 		std::cout << "Loading failed!" << std::endl;
 		return ERROR_FILE_IN;
 	}
-	return NOERROR;
+	return 0;
 }

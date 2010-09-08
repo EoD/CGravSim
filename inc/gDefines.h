@@ -76,19 +76,19 @@
 #define LACCURACY 1.0E2
 
 /* Error handling */
-#define NOERROR 0
+#define ERROR_NONE 0
 
-#define ERROR_UNKNOWN	-1
-#define ERROR_FILE_IN	1
-#define ERROR_FILE_OUT	2
-#define ERROR_CALC	3
+#define ERROR_UNKNOWN	1
+#define ERROR_FILE_IN	2
+#define ERROR_FILE_OUT	3
+#define ERROR_CALC	4
 
-#define ERROR_CALC_UNKNOWN	-1
-#define ERROR_CALC_DATA		1
-#define ERROR_CALC_LIGHTSPEED	2
-#define ERROR_CALC_LIMIT_LONG	3
-#define ERROR_CALC_LIMIT_DOUBLE	4
-#define ERROR_CALC_NAN		5
+#define ERROR_CALC_UNKNOWN	1
+#define ERROR_CALC_DATA		2
+#define ERROR_CALC_LIGHTSPEED	3
+#define ERROR_CALC_LIMIT_LONG	4
+#define ERROR_CALC_LIMIT_DOUBLE	5
+#define ERROR_CALC_NAN		6
 
 /* OpenMP support */
 #ifdef _OPENMP

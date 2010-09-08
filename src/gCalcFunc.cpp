@@ -20,6 +20,10 @@
 #include "gMathFunc.h"
 #include "gDebugFunc.h"
 
+int calc::error = NOERROR;
+bool calc::flagcalc = true;
+long double calc::dtime_step = 0;
+
 //Berechnet die Kraft auf ein referenz objekt (mpmain)
 //Kraft entsteht durch grav-wirkung aller anderen
 int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {

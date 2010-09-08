@@ -11,7 +11,7 @@
 #include "gDefines.h"
 #include "gGravDataSet.h"
 #include "gDebugFunc.h"
-#include "gCalc_interface.h"
+#include "gCalcFunc.h"
 
 int main(int argc, char* pArgs[]) {
 	std::string filename;

@@ -6,9 +6,9 @@
 #include "gMathVec.h"
 
 namespace calc {
-	int error = NOERROR;
-	bool flagcalc = true;
-	long double dtime_step = 0;
+	extern int error;
+	extern bool flagcalc;
+	extern long double dtime_step;
 	
 	int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal);
 	GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout);

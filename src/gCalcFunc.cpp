@@ -629,6 +629,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			debugout("CalcCode() - temp==NULL, start==NULL - seems that new dt was found", 20);
 			//TODO Remove for final
 			if(pgs_current->numObjects <= 1) {
+				delete pgs_temp;
 				return error;
 			}
 		}

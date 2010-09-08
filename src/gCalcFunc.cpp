@@ -208,7 +208,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #ifdef DEBUG
 				count++;
 #endif
-				if (dtime_step <= 10.0*DOUBLE_MIN) { //TODO FIX REQUIRED java.lang.Double.MIN_VALUE) {
+				if (dtime_step <= 10.0*LDBL_MIN) { //TODO FIX REQUIRED java.lang.Double.MIN_VALUE) {
 					debugout("calcAcc - ERROR double-limit reached!");
 					flagcalc = false;
 					error = ERROR_CALC_LIMIT_DOUBLE;
@@ -249,11 +249,9 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		++limit;
 		//TODO FIX really requ
 		/*		if(mpold->posx < 0)
-		 limit = LONGLONG_MIN - mpold->posx;
-		 //limit = Long.MIN_VALUE - mpold.getCoordMLV().x1;
+		 limit = LLONG_MIN - mpold->posx;
 		 else
-		 limit = LONGLONG_MAX - mpold->posx;
-		 //limit = Long.MAX_VALUE - mpold.getCoordMLV().x1;
+		 limit = LLONG_MAX - mpold->posx;
 		 if(abs(limit) - abs(mlvds[0]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit1 reached, break. Object ID: ",mpold->id,99);
@@ -262,11 +260,9 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 }
 
 		 if(mpold->posy < 0)
-		 limit = LONGLONG_MIN - mpold->posy;
-		 //limit = Long.MIN_VALUE - mpold.getCoordMLV().x2;
+		 limit = LLONG_MIN - mpold->posy;
 		 else
-		 limit = LONGLONG_MAX - mpold->posy;
-		 //limit = Long.MAX_VALUE - mpold.getCoordMLV().x2;
+		 limit = LLONG_MAX - mpold->posy;
 		 if(abs(limit) - abs(mlvds[1]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit2 reached, break. Object ID: ",mpold->id,99);
@@ -275,11 +271,9 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 }
 
 		 if(mpold->posz < 0)
-		 limit = LONGLONG_MIN - mpold->posz;
-		 //limit = Long.MIN_VALUE - mpold.getCoordMLV().x3;
+		 limit = LLONG_MIN - mpold->posz;
 		 else
-		 limit = LONGLONG_MAX - mpold->posz;
-		 //limit = Long.MAX_VALUE - mpold.getCoordMLV().x3;
+		 limit = LLONG_MAX - mpold->posz;
 		 if(abs(limit) - abs(mlvds[2]) < 0) {
 		 flagcalc = false;
 		 debugout("calcAcc - Long Limit3 reached, break. Object ID: ",mpold->id,99);

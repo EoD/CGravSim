@@ -52,9 +52,25 @@
 #define PI 3.141592654; //TODO new PI requ
 
 /* Limits */
-#define DOUBLE_MIN DBL_MIN 
-#define LONGLONG_MAX LONG_MAX*LONG_MAX	//TODO FIX!
-#define LONGLONG_MIN -LONGLONG_MAX		//TODO FIX!
+#if not defined LDBL_MAX || not defined LDBL_MIN
+ #include <float.h>
+ #ifndef LDBL_MAX
+  #define LDBL_MAX DBL_MAX	//TODO: check if there is something nicer out there
+ #endif
+ #ifndef LDBL_MIN
+  #define LDBL_MIN DBL_MIN
+ #endif
+#endif
+
+#if not defined LLONG_MAX || not defined LLONG_MIN
+ #include <limits.h>
+ #ifndef LLONG_MAX
+  #define LLONG_MAX LONG_MAX*LONG_MAX
+ #endif
+ #ifndef LLONG_MIN
+  #define LLONG_MIN -LLONG_MAX-1
+ #endif
+#endif
 
 /* Accuracy of calculation */
 #define LACCURACY 1.0E2

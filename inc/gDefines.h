@@ -34,8 +34,13 @@
  #define LINEDELIMNUM	1	//this comes from the fact, that unix recognizes "CR LN" as one linebreak + one character
 #endif
 
+
+//in case cmath has no isnan
 #ifndef isnan
-#define isnan(x) ((x) != (x))
+ #include <cmath>
+ #ifndef isnan
+  #define isnan(x) ((x) != (x))
+ #endif
 #endif
 
 //natural constants

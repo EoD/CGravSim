@@ -3,8 +3,6 @@
 #endif
 #include <iostream>
 #include <fstream>
-#include <cmath>
-#include <cfloat>
 
 /*
 #ifdef DEBUG
@@ -19,8 +17,9 @@
 #include "gCalcFunc.h"
 #include "gMathFunc.h"
 #include "gDebugFunc.h"
+#include "gError.h"
 
-int calc::error = ERROR_NONE;
+std::bitset<ERROR_CALC_MAX> calc::cerrors;
 bool calc::flagcalc = true;
 long double calc::dtime_step = 0;
 
@@ -159,10 +158,11 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//JAVA
 		//MDVector mvforce = new MDVector(0,0,0);		
 		mdv mvforce(0);
-		error = calcForce(mpold, vmpsinsert, mvforce);
+		int error = calcForce(mpold, vmpsinsert, mvforce);
 		if(error != ERROR_NONE) {
 			flagcalc = false;
 			bkillloop = true;
+			cerrors |= ERROR_TO_BITSET(error);
 			FORKILLER;
 		}
 
@@ -211,7 +211,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 				if (dtime_step <= 10.0*LDBL_MIN) { //TODO FIX REQUIRED java.lang.Double.MIN_VALUE) {
 					debugout("calcAcc - ERROR double-limit reached!");
 					flagcalc = false;
-					error = ERROR_CALC_LIMIT_DOUBLE;
+					cerrors |= cerror::limit_dbl;
 					break;
 				}
 				dtime_step /= 10.0;
@@ -229,7 +229,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//add dv to complete v
 		if (!mpnew->addSpeed(deltav)) {
 			flagcalc = false;
-			error = ERROR_CALC_LIGHTSPEED;
+			cerrors |= cerror::lightspeed;;
 		}
 
 		//new function which produces new coords
@@ -399,7 +399,7 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	mpsurvive->setMass(dmass);
 	if (!mpsurvive->setSpeed(dspeed_all)) {
 		//TODO FIX myController.flagcalc = false;
-		error = ERROR_CALC_LIGHTSPEED;
+		cerrors |= cerror::lightspeed;
 	}
 	mpsurvive->setRadius(dradius);
 	return mpsurvive;
@@ -448,7 +448,7 @@ GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 			if ((*j)->id == (*i)->id) {
 				debugout("collisionCheck() - hmmmm. ID: ", mpi->id, 10);
 				flagcalc = false;
-				error = ERROR_CALC_UNKNOWN;
+				cerrors |= cerror::unknown;
 				return NULL;
 			}
 
@@ -501,7 +501,7 @@ bool calc::checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	return false;
 }
 
-int calc::master(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default) {
+std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default) {
 
 	GravStep* pgs_current = NULL;
 	GravStep* pgs_temp = NULL;
@@ -509,7 +509,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 	unsigned int lstep = 0;
 	/*long double*/dtime_step = dtime_step_default;
 	long double dtime_exactstep = dtime_step/powx(10.0, 3.0);
-	error = ERROR_NONE;
+	cerrors.reset();
 	int percent = 0;
 	debugout("CalcCode() - Vars initialized, starting", 15);
 	savepercentage(FILE_PERCENT,percent);
@@ -535,13 +535,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR1",99);
-					return ERROR_CALC_DATA;
+					return cerrors |= cerror::data;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR1, help",99);
 				flagcalc = false;
-				return ERROR_CALC_DATA;
+				return cerrors |= cerror::data;
 			}
 #endif
 			//debugout("CalcCode - First Collision Check starting",15);
@@ -563,13 +563,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*k)->mass <= 0 || (*k)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR2",99);
-					return ERROR_CALC_DATA;
+					return cerrors |= cerror::data;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR2, help",99);
 				flagcalc = false;
-				return ERROR_CALC_DATA;
+				return cerrors |= cerror::data;
 			}
 #endif
 			//pgs_start->empty();
@@ -582,7 +582,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 				pgs_start = NULL;
 			} else {
 				debugout("CalcCode - ERROR, undefined. Line555", 99);
-				return ERROR_CALC_UNKNOWN;
+				return cerrors |= cerror::unknown;
 			}
 			debugout("CalcCode - First Collision Check ending", 5);
 			pgs_temp = new GravStep();
@@ -604,13 +604,13 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 
 				if((*j)->mass <= 0 || (*j)->radius <= 0) {
 					debugout("CalcCode() - Var ERROR3",99);
-					return ERROR_CALC_DATA;
+					return cerrors |= cerror::data;
 				}
 			}
 			if(count < 1) {
 				debugout("CalcCode() - ERROR3, help",99);
 				flagcalc = false;
-				return ERROR_CALC_DATA;
+				return cerrors |= cerror::data;
 			}
 #endif
 			debugout("CalcCode - Collision Check starting", 7);
@@ -628,7 +628,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			//TODO Remove for final
 			if(pgs_current->numObjects <= 1) {
 				delete pgs_temp;
-				return error;
+				return cerrors;
 			}
 		}
 
@@ -673,7 +673,7 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
 				if(!savepercentage(FILE_PERCENT,++percent)) {
-					error = ERROR_FILE_OUT;
+					error::errors |= error::file_out;
 					break;
 				}
 			}
@@ -686,18 +686,18 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 	}
 
 	if (flagcalc == false) {
-		debugout("calcMain - flagcalc==false, error=",error, 15);
+		debugout("calcMain - flagcalc==false, cerrors=", cerrors.to_string(), 15);
 	} //TODO FIX myModel.correctHeader(new File(Model.Defaultname), (int)(dtsum/timecount));
 
 	debugout("calcMain - Quit - Roger and out", 15);
 
 	/* in case calculation stopped before 100% were reached */
 	if(percent < 100 && !savepercentage(FILE_PERCENT, 100))
-		error = ERROR_FILE_OUT;
+		error::errors |= error::file_out;
 
 	ofs_temp.close();
 	delete pgs_temp;
-	return error;
+	return cerrors;
 }
 
 bool calc::savepercentage(std::string file, int percent) {

@@ -78,17 +78,21 @@
 /* Error handling */
 #define ERROR_NONE 0
 
+#define ERROR_MAX	4
 #define ERROR_UNKNOWN	1
 #define ERROR_FILE_IN	2
 #define ERROR_FILE_OUT	3
 #define ERROR_CALC	4
 
+#define ERROR_CALC_MAX		6
 #define ERROR_CALC_UNKNOWN	1
 #define ERROR_CALC_DATA		2
 #define ERROR_CALC_LIGHTSPEED	3
 #define ERROR_CALC_LIMIT_LONG	4
 #define ERROR_CALC_LIMIT_DOUBLE	5
 #define ERROR_CALC_NAN		6
+
+#define ERROR_TO_BITSET(x) ldexp(1, x-1)
 
 /* OpenMP support */
 #ifdef _OPENMP

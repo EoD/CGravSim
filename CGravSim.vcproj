@@ -291,6 +291,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\inc\gError.h"
+				>
+			</File>
+			<File
 				RelativePath=".\inc\gGravDataSet.h"
 				>
 			</File>
@@ -322,6 +326,10 @@
 			</File>
 			<File
 				RelativePath=".\src\gDebugFunc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\gError.cpp"
 				>
 			</File>
 			<File

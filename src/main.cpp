@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <cfloat>
+#include <bitset>
 
 #define MAIN
 
@@ -12,6 +13,7 @@
 #include "gGravDataSet.h"
 #include "gDebugFunc.h"
 #include "gCalcFunc.h"
+#include "gError.h"
 
 int main(int argc, char* pArgs[]) {
 	std::string filename;
@@ -121,16 +123,18 @@ int main(int argc, char* pArgs[]) {
 #ifdef DEBUG
 		std::cout << " Debuglevel=" << DEBUG << std::endl;
 #endif
-		int error = calc::master(filename, *i, pgdsStart->llnumSteps*pgdsStart->drTime, pgdsStart->drTime, dtime_step_default);
+		std::bitset<ERROR_CALC_MAX> cerrors = calc::master(filename, *i, pgdsStart->llnumSteps*pgdsStart->drTime, pgdsStart->drTime, dtime_step_default);
 
 		std::cout << std::endl << "Calculation finished";
-		if(error != ERROR_NONE)
-			std::cout << " with error " << error;
+		if(cerrors.any()) {
+			error::errors |= error::calc;
+			std::cout << " with errors " << cerrors;
+		}
 
 		std::cout << "!" << std::endl;
 
 		//del = remove(FILE_PERCENT);
-		return error==ERROR_NONE?0:1;
+		return error::errors.any();
 	}
 	else {
 		std::cout << "Loading failed!" << std::endl;

@@ -690,7 +690,9 @@ int calc::master(std::string filename, GravStep* pgs_start, long double dtime_ma
 	} //TODO FIX myModel.correctHeader(new File(Model.Defaultname), (int)(dtsum/timecount));
 
 	debugout("calcMain - Quit - Roger and out", 15);
-	if(!savepercentage(FILE_PERCENT, 100))
+
+	/* in case calculation stopped before 100% were reached */
+	if(percent < 100 && !savepercentage(FILE_PERCENT, 100))
 		error = ERROR_FILE_OUT;
 
 	ofs_temp.close();

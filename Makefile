@@ -142,6 +142,12 @@ cleanarch:
 	-@${RM} $(DIR_DEP)
 	@echo "Cleanup done"
 
+cleantmp:
+	@echo "Doing obj and dep cleanup..."
+	-@${RM} obj_*
+	-@${RM} dep_*
+	@echo "Cleanup done"
+
 clean:
 	@echo "Doing some cleanup..."
 	-@${RM} obj_*
@@ -181,6 +187,7 @@ Available COMMANDs:\n\
   rundebug	: Build all and execute the program with gdb					\n\
  Clean:\n\
   clean		: Cleanup the whole project (obj, dep and exe folders will be fully purged)	\n\
+  cleantmp	: Cleanup all temporary folders (obj and dep folders will be purged)		\n\
   cleanarch	: Cleanup parts of the project (obj_ARCH and dep_ARCH folders will be purged)	\n\
  Others:\n\
   stats		: Calculate wc-stats of src/ and inc/						\n\

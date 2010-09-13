@@ -17,7 +17,6 @@ DIR_SRC = src/
 DIR_INC = inc/
 DIR_EXE = exe/
 DIR_DEP = dep_${ARCH}/
-#DIR_TMP = tmp/
 
 ifndef GCC
  GCC = g++
@@ -141,8 +140,6 @@ cleanarch:
 	@echo "Doing only some ${ARCH} architecture cleanup..."
 	-@${RM} $(DIR_OBJ)
 	-@${RM} $(DIR_DEP)
-#	-@${RM} $(DIR_TMP)*
-#	-@${MKDIR} $(DIR_TMP)
 	@echo "Cleanup done"
 
 clean:
@@ -150,9 +147,7 @@ clean:
 	-@${RM} obj_*
 	-@${RM} $(DIR_EXE)*
 	-@${RM} dep_*
-#	-@${RM} $(DIR_TMP)*
 	-@${MKDIR} $(DIR_EXE)
-#	-@${MKDIR} $(DIR_TMP)
 	@echo "Cleanup done"
 
 stats:

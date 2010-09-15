@@ -28,26 +28,25 @@ DBG_PROG = gdb --ex run --args
 MKDIR	= mkdir -p
 RM	= rm -rf
 
+#GCC 4.6 CFLAGS	= -Ofast -Wall -funroll-loops -fopenmp
+CFLAGS	= -O3 -Wall -ffast-math -funroll-loops -fopenmp
+
 INCLUDES = -I$(DIR_INC)
 OPTFLAGS = -mtune=generic
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
 #Enable highest debuglevel, profiling, and display every single warning
 Releasename=dbg
-CFLAGS = -O2 -g3 -Wall -pedantic -Wno-long-long -D_DEBUG
+CFLAGS += -g3 -pedantic -Wno-long-long -D_DEBUG
 DIR_OBJ = obj_${ARCH}_d/
 else
 #turn on some optimization
 Releasename=
-CFLAGS = -O2 -g -Wall
+CFLAGS += -g
 DIR_OBJ = obj_${ARCH}_r/
 endif
 
-#Enable handling of OpenMP directives!
-CFLAGS += -fopenmp
-
 #Name of the executable:
-
 ifdef WINDOWS
  EXE_NAME = cgravsim$(Releasename)_${ARCH}.exe
  LD = ${CROSS_COMPILE}${GCC} -static-libgcc

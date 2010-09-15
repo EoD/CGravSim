@@ -62,12 +62,14 @@ int main(int argc, char* pArgs[]) {
 		}
 	}
 
-	int del = remove(FILE_PERCENT);
 #ifdef DEBUG
+	int del = remove(FILE_PERCENT);
 	if (del != 0)
 		std::cout << "Remove operation 1 failed" << std::endl;
 	else
 		std::cout << FILE_PERCENT << " has been deleted #1" << std::endl;
+#else
+	remove(FILE_PERCENT);
 #endif
 
 	if( filename.size() <= 0 ) {
@@ -140,5 +142,4 @@ int main(int argc, char* pArgs[]) {
 		std::cout << "Loading failed!" << std::endl;
 		return ERROR_FILE_IN;
 	}
-	return 0;
 }

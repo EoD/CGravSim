@@ -174,16 +174,16 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//Math.sqrtx( Math.powx(LIGHTSPEED,2.0) - Math.powx(mpmain.getSpeed(),2.0) / Math.powx(LIGHTSPEED,2.0));
 		//TODO reform!
 		long double da1 = gamma(mpold->getAbsSpeed());
-		da1 *= powx(LIGHTSPEED, 2.0) * mvforce.x - mpold->vel.x * (mvforce * mpold->vel);
-		da1 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
+		da1 *= powx(LIGHTSPEED, 2) * mvforce.x - mpold->vel.x * (mvforce * mpold->vel);
+		da1 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
 
 		long double da2 = gamma(mpold->getAbsSpeed());
-		da2 *= powx(LIGHTSPEED, 2.0) * mvforce.y - mpold->vel.y * (mvforce * mpold->vel);
-		da2 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
+		da2 *= powx(LIGHTSPEED, 2) * mvforce.y - mpold->vel.y * (mvforce * mpold->vel);
+		da2 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
 
 		long double da3 = gamma(mpold->getAbsSpeed());
-		da3 *= powx(LIGHTSPEED, 2.0) * mvforce.z - mpold->vel.z * (mvforce * mpold->vel);
-		da3 /= powx(LIGHTSPEED, 2.0) * mpold->getAbsMass();
+		da3 *= powx(LIGHTSPEED, 2) * mvforce.z - mpold->vel.z * (mvforce * mpold->vel);
+		da3 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
 		//debugout("calcAcc() -  Acceleration (a1,a2,a3): "+da1+","+da2+","+da3);
 
 		debugout(" calcAcc() - da1:", da1, 5);
@@ -355,7 +355,7 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	long double dmass = sqrt( (E1+E2)*(E1+E2) / (LIGHTSPEED*LIGHTSPEED) - dfactora) / LIGHTSPEED;
 	
 	long double dgamma3;
-	dgamma3 = LIGHTSPEED*LIGHTSPEED*powx(dmass, 2.0);
+	dgamma3 = LIGHTSPEED*LIGHTSPEED*powx(dmass, 2);
 	dgamma3 += dfactora;
 	dgamma3 = dfactora / dgamma3;
 	dgamma3 = sqrtx((long double)1.0 - dgamma3);
@@ -508,7 +508,7 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 	long double dtime_sum = 0;
 	unsigned int lstep = 0;
 	/*long double*/dtime_step = dtime_step_default;
-	long double dtime_exactstep = dtime_step/powx(10.0, 3.0);
+	long double dtime_exactstep = dtime_step/powx(10.0, 3);
 	cerrors.reset();
 	int percent = 0;
 	debugout("CalcCode() - Vars initialized, starting", 15);

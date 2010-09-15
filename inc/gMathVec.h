@@ -12,13 +12,13 @@ private:
 		if(typeid(T) == typeid(long long) || typeid(T) == typeid(long))
 			return (long double)x / (long double)LACCURACY;
 		else
-			return x;
+			return (long double)x;
 	}
 	long long toLong(T x) const {
 		if(typeid(T) == typeid(long double) || typeid(T) == typeid(double))
 			return (long long)floor((x * (long double)LACCURACY)+0.5);
 		else
-			return x;
+			return (long long)x;
 	}
 public:
 	T x,y,z;
@@ -31,14 +31,14 @@ public:
 		if(typeid(T) == typeid(long double) || typeid(T) == typeid(double))
 			return mlv(toLong(x), toLong(y), toLong(z));
 		
-		return mlv(x, y, z);
+		return mlv((long long)x, (long long)y, (long long)z);
 	}
 
 	operator mdv () const {
 		if(typeid(T) == typeid(long long) || typeid(T) == typeid(long))
 			return mdv(toDouble(x), toDouble(y), toDouble(z));
 		
-		return mdv(x, y, z);
+		return mdv((long double)x, (long double)y, (long double)z);
 	}
 
 	T operator[](unsigned int n) {

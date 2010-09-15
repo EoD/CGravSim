@@ -52,7 +52,7 @@
 #define PI 3.141592654; //TODO new PI requ
 
 /* Limits */
-#if not defined LDBL_MAX || not defined LDBL_MIN
+#if !defined LDBL_MAX || !defined LDBL_MIN
  #include <float.h>
  #ifndef LDBL_MAX
   #define LDBL_MAX DBL_MAX	//TODO: check if there is something nicer out there
@@ -62,7 +62,7 @@
  #endif
 #endif
 
-#if not defined LLONG_MAX || not defined LLONG_MIN
+#if !defined LLONG_MAX || !defined LLONG_MIN
  #include <limits.h>
  #ifndef LLONG_MAX
   #define LLONG_MAX LONG_MAX*LONG_MAX
@@ -92,7 +92,7 @@
 #define ERROR_CALC_LIMIT_DOUBLE	5
 #define ERROR_CALC_NAN		6
 
-#define ERROR_TO_BITSET(x) ldexp(1, x-1)
+#define ERROR_TO_BITSET(x) (unsigned long)(ldexp(1.0f, x-1))
 
 /* OpenMP support */
 #ifdef _OPENMP

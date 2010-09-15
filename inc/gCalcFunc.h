@@ -15,7 +15,7 @@ namespace calc {
 		const bitset<ERROR_CALC_MAX> limit_long	( ERROR_TO_BITSET(ERROR_CALC_LIMIT_LONG) );
 		const bitset<ERROR_CALC_MAX> limit_dbl	( ERROR_TO_BITSET(ERROR_CALC_LIMIT_DOUBLE) );
 		const bitset<ERROR_CALC_MAX> nan	( ERROR_TO_BITSET(ERROR_CALC_NAN) );
-	};
+	}
 
 	extern std::bitset<ERROR_CALC_MAX> cerrors;
 	extern bool flagcalc;
@@ -28,6 +28,6 @@ namespace calc {
 	bool checkSpeedBorder(GravStep* pgs_test, long double dpercentage);
 	std::bitset<ERROR_CALC_MAX> master(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default);
 	bool savepercentage(std::string file, int percent);
-};
+}
 
 #endif

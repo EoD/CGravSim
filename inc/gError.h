@@ -11,6 +11,6 @@ namespace error {
 	const bitset<ERROR_MAX> file_in	( ERROR_TO_BITSET(ERROR_FILE_IN) );
 	const bitset<ERROR_MAX> file_out( ERROR_TO_BITSET(ERROR_FILE_OUT) );
 	const bitset<ERROR_MAX> calc	( ERROR_TO_BITSET(ERROR_CALC) );
-};
+}
 
 #endif

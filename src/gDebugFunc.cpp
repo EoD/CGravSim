@@ -108,12 +108,14 @@ void debugout(std::string strdbg, std::string var, int dbgprio) {
 
 //_itoa( myInt, myString, 10);
 
-void debugout(std::string strdbg) {
 #ifdef DEBUG
-	if ( 91 <= DEBUG) {
+void debugout(std::string strdbg) {
+	#if DEBUG >= 91
 		const char* output = strdbg.c_str();
 		std::cout << output << " - DBG outdated!" << std::endl;
-	}
-#endif
+	#endif
 }
+#else
+void debugout(std::string /* strdbg */) { }
+#endif
 

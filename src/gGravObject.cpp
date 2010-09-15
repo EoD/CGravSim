@@ -63,7 +63,7 @@ void GravObject::setRadius(long double a) {
 long double GravObject::getSchwarzschildRadius() {
 	//r = 2Gm / c^2
 	//debugout("getSchwarzschildRadius() - returning", 5);
-	return (2.0*GRAVCONST*getSRTMass())/powx(LIGHTSPEED, 2.0);
+	return (2.0*GRAVCONST*getSRTMass())/powx(LIGHTSPEED, 2);
 }
 
 long double GravObject::drange(GravObject* mp2) {
@@ -96,11 +96,11 @@ bool GravObject::addSpeed(mdv& v) {
 }
 
 long double GravObject::getVolume() {
-	return (4.0/3.0*powx(radius, 3.0))*PI;
+	return (4.0/3.0*powx(radius, 3))*PI;
 }
 
 long double GravObject::getSchwarzschildVolume() {
-	return (4.0/3.0*powx(getSchwarzschildRadius(), 3.0))*PI;
+	return (4.0/3.0*powx(getSchwarzschildRadius(), 3))*PI;
 }
 
 /** Returns the relativistic impulse for the masspoint */
@@ -110,7 +110,7 @@ mdv GravObject::getImpulse() {
 
 /** Returns the relativistic energy for the masspoint */
 long double GravObject::getEnergy() {
-	double Energy = mass * LIGHTSPEED * LIGHTSPEED;
+	long double Energy = mass * LIGHTSPEED * LIGHTSPEED;
 	Energy *= Energy;
 	Energy += LIGHTSPEED * LIGHTSPEED + (getImpulse() * getImpulse());
 	return sqrt(Energy);

@@ -22,6 +22,7 @@
 std::bitset<ERROR_CALC_MAX> calc::cerrors;
 bool calc::flagcalc = true;
 long double calc::dtime_step = 0;
+bool calc::flag_collision = true;
 
 //Berechnet die Kraft auf ein referenz objekt (mpmain)
 //Kraft entsteht durch grav-wirkung aller anderen
@@ -220,6 +221,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #endif
 			}
 			debugout("calcAcc() - dv+v0 > c => break. New dtime_step=", dtime_step, 10); //="+dtime_step);
+			std::cerr << "WARNING - reduced timestep to " << dtime_step << "!" << std::endl;
 
 			bkillloop = true;
 			#pragma omp flush (bkillloop)
@@ -545,7 +547,12 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 			}
 #endif
 			//debugout("CalcCode - First Collision Check starting",15);
-			pgs_current = collisionCheck(pgs_start);
+			if(flag_collision) {
+				pgs_current = collisionCheck(pgs_start);
+			} else {
+				pgs_current = pgs_start;
+				pgs_start = new GravStep();
+			}
 			//empty start GravStep object and use it for temporary calcs/vars
 			//pgs_temp = pgs_start;
 #ifdef DEBUG
@@ -619,8 +626,14 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 				//delete pgs_current;
 				pgs_current = NULL;
 			}
-			pgs_current = collisionCheck(pgs_temp);
-			pgs_temp->empty();
+			if(flag_collision) {
+				pgs_current = collisionCheck(pgs_temp);
+				pgs_temp->empty();
+			} else {
+				pgs_current = pgs_temp;
+				pgs_temp = new GravStep();
+			}
+
 			debugout("CalcCode - Collision Check ending", 5);
 		} else {
 			pgs_temp = new GravStep();
@@ -637,8 +650,10 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 		//	pgs_current->objects.reverseswap();
 		//}
 		
-		//�berpr�fe ob eines der MPs schneller als 60%c fliegt
-		if (checkSpeedBorder(pgs_current, 0.8)) {
+		/* Check if one of the mps is faster then 80% of c.
+		 * Only required when checking for collsion! 
+		 */		
+		if (flag_collision && checkSpeedBorder(pgs_current, 0.8)) {
 			debugout("CalcCode - Speed has been higher than 80% c", 10);
 			if (dtime_step > dtime_exactstep) {
 				dtime_step = dtime_exactstep;

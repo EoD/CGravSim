@@ -21,6 +21,9 @@
 #define FLAG_TIME1 "--timestep"
 #define FLAG_TIME2 "-t"
 
+#define FLAG_NOCOLL1	"--disable-collision"
+#define	FLAG_NOCOLL2	"-C"
+
 /* General definitions */
 #define DATAPRECISION 20
 #define DELIMDATA ";"

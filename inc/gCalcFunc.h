@@ -20,6 +20,7 @@ namespace calc {
 	extern std::bitset<ERROR_CALC_MAX> cerrors;
 	extern bool flagcalc;
 	extern long double dtime_step;
+	extern bool flag_collision;
 	
 	int calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal);
 	GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout);

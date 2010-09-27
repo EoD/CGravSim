@@ -38,6 +38,7 @@ int main(int argc, char* pArgs[]) {
 			std::cout << "  " << FLAG_HELP2  << ", " << FLAG_HELP1  << "\t\tdisplay this help" << std::endl;
 			std::cout << "  " << FLAG_DEBUG2 << ", " << FLAG_DEBUG1 << "\t\tprint version of backend and expected frontend" << std::endl;
 			std::cout << "  " << FLAG_TIME2  << ", " << FLAG_TIME1  << "  \toverrides the timestep which is used for calculation" << std::endl;
+			std::cout << "  " << FLAG_NOCOLL2  << ", " << FLAG_NOCOLL1  << "\n\t\t\tDisables collision detection.\n\t\t\tBe aware that this may result in extremly small time steps during calculation!" << std::endl;
 			std::cout << std::endl << "Version : " << BVERSION << std::endl;
 #ifdef DEBUG
 			std::cout <<   "Debug   : " << DEBUG << std::endl;
@@ -53,6 +54,12 @@ int main(int argc, char* pArgs[]) {
 			} else { 
 				break; 
 			}
+		}
+		else if((std::string)pArgs[i] == FLAG_NOCOLL1 || (std::string)pArgs[i] == FLAG_NOCOLL2) {
+			calc::flag_collision = false;
+#ifdef DEBUG
+			std::cout << "Collision detection has been disabled" << std::endl;
+#endif
 		}
 		else {
 			filename = pArgs[i];
@@ -99,6 +106,8 @@ int main(int argc, char* pArgs[]) {
 		std::cout << "Number of Steps: " << pgdsStart->llnumSteps << std::endl;
 		std::cout << "Save dTime: " << pgdsStart->drTime << std::endl;
 		std::cout << "Calc dTime: " << dtime_step_default << std::endl;
+		std::cout << "Collision: " << (calc::flag_collision?"en":"dis") << "abled" << std::endl;
+
 		std::vector<GravStep*>::iterator i = pgdsStart->steps.begin();
 #ifdef DEBUG
 		int count = 0;

@@ -18,21 +18,29 @@ DIR_INC = inc/
 DIR_EXE = exe/
 DIR_DEP = dep_${ARCH}/
 
-ifndef GCC
- GCC = g++
-endif
-
-CC     = ${CROSS_COMPILE}${GCC}
-LD     = ${CROSS_COMPILE}${GCC}
 DBG_PROG = gdb --ex run --args
 MKDIR	= mkdir -p
 RM	= rm -rf
 
+#######
+##GCC - default compiler
+#######
 #GCC 4.6 CFLAGS	= -Ofast -Wall -funroll-loops -fopenmp
-CFLAGS	= -O3 -Wall -ffast-math -funroll-loops -fopenmp
+CFLAGS	= -O3 -Wall -ffast-math -funroll-loops -fopenmp -mtune=generic
+CC	= ${CROSS_COMPILE}g++
+LD	= $(CC)
+DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
+
+#######
+##CC - Sun Studio 12 compiler
+#######
+#CC 5.9: no -xopenmp; OpenMP standard too old
+#CC	= CC
+#LD	= $(CC)
+#CFLAGS	= -fast +w -xarch=generic
+#DFLAGS	= -xM1 $< $(INCLUDES) 
 
 INCLUDES = -I$(DIR_INC)
-OPTFLAGS = -mtune=generic
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
 #Enable highest debuglevel, profiling, and display every single warning
@@ -77,7 +85,7 @@ ifeq ($(ARCH),sparc64)
 CFLAGS += -m64
 endif
 
-LDFLAGS  = $(CFLAGS) $(INCLUDES) $(LIBARIES) $(OPTFLAGS)
+LDFLAGS  = $(CFLAGS) $(INCLUDES) $(LIBARIES)
 
 all: $(DEP_FILES) $(OBJ_FILES)
 	@echo "# Linking to $(DIR_EXE)$(EXE_NAME)"
@@ -95,7 +103,7 @@ $(DIR_OBJ)%.o : $(DIR_SRC)%.cpp
 $(DIR_DEP)%.d : $(DIR_SRC)%.cpp 
 #	@echo "Update dependencies for ${ARCH} $<"
 	-@${MKDIR} ${DIR_DEP}
-	@$(CC) -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o > $@
+	@$(CC) $(DFLAGS) > $@
 
 
 run: all

@@ -25,8 +25,10 @@ RM	= rm -rf
 #######
 ##GCC - default compiler
 #######
-#GCC 4.6 CFLAGS	= -Ofast -Wall -funroll-loops -fopenmp
-CFLAGS	= -O3 -Wall -ffast-math -funroll-loops -fopenmp -mtune=generic
+#GCC 4.6: (-Ofast) == (-O3 -ffast-math) maybe also -D_GLIBCXX_PARALLEL
+CFLAGS	= -Wall -fopenmp -mtune=generic
+CFLAGS_RELEASE	= -g -O3 -ffast-math -funroll-loops
+CFLAGS_DEBUG	= -g3 -pedantic -Wno-long-long -Wextra
 CC	= ${CROSS_COMPILE}g++
 LD	= $(CC)
 DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
@@ -37,7 +39,9 @@ DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
 #CC 5.9: no -xopenmp; OpenMP standard too old
 #CC	= CC
 #LD	= $(CC)
-#CFLAGS	= -fast +w -xarch=generic
+#CFLAGS	= -m64
+#CFLAGS_RELEASE	= +w -fast -xarch=generic -xautopar
+#CFLAGS_DEBUG	= +w2
 #DFLAGS	= -xM1 $< $(INCLUDES) 
 
 #######
@@ -45,29 +49,29 @@ DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
 #######
 #CC	= icc
 #LD	= icpc
-#CFLAGS	= -fast -xSSE2 -Wall -funroll-loops -openmp -parallel
+#CFLAGS	= -openmp -parallel
+#CFLAGS_RELEASE	= -fast -xSSE2 -funroll-loops
+#CFLAGS_DEBUG	= -Wall -static-intel
 #DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
 
 INCLUDES = -I$(DIR_INC)
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff
-#Enable highest debuglevel, profiling, and display every single warning
-Releasename=dbg
-CFLAGS += -g3 -pedantic -Wno-long-long -D_DEBUG
+POSTFIX=dbg
+CFLAGS += -D_DEBUG $(CFLAGS_DEBUG)
 DIR_OBJ = obj_${ARCH}_d/
 else
-#turn on some optimization
-Releasename=
-CFLAGS += -g
+POSTFIX=
+CFLAGS += $(CFLAGS_RELEASE)
 DIR_OBJ = obj_${ARCH}_r/
 endif
 
 #Name of the executable:
 ifdef WINDOWS
- EXE_NAME = cgravsim$(Releasename)_${ARCH}.exe
+ EXE_NAME = cgravsim$(POSTFIX)_${ARCH}.exe
  LD = ${CROSS_COMPILE}${GCC} -static-libgcc
 else
- EXE_NAME = cgravsim$(Releasename)_${ARCH}
+ EXE_NAME = cgravsim$(POSTFIX)_${ARCH}
 endif
 
 SRC_FILES := $(wildcard $(DIR_SRC)*.cpp)
@@ -76,6 +80,7 @@ DEP_FILES_TMP := $(SRC_FILES:%.cpp=%.d)
 DEP_FILES := $(DEP_FILES_TMP:$(DIR_SRC)%=$(DIR_DEP)%)
 SRC_FILES_NOEXT := $(notdir $(basename $(SRC_FILES)))
 OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJ)%)
+
 
 ifeq ($(ARCH),x86)
 CFLAGS += -m32
@@ -93,11 +98,10 @@ ifeq ($(ARCH),sparc64)
 CFLAGS += -m64
 endif
 
-LDFLAGS  = $(CFLAGS) $(INCLUDES) $(LIBARIES)
 
 all: $(DEP_FILES) $(OBJ_FILES)
 	@echo "# Linking to $(DIR_EXE)$(EXE_NAME)"
-	$(LD) $(LDFLAGS) -o $(DIR_EXE)$(EXE_NAME) $(OBJ_FILES)
+	$(LD) $(CFLAGS) $(INCLUDE) -o $(DIR_EXE)$(EXE_NAME) $(OBJ_FILES)
 	@echo "Done!"
 	@echo ""
 
@@ -123,7 +127,7 @@ rundebug: all
 	$(DBG_PROG) $(DIR_EXE)$(EXE_NAME)
 
 debug:
-	@RELEASE=false make
+	@RELEASE=false make auto
 
 auto:
 	@ARCH=`(uname -m 2>/dev/null) || echo x86` make all
@@ -133,23 +137,26 @@ arch_auto: auto
 arch_win32:
 	@WINDOWS=true make arch_x86
 
+arch_i686: arch_x86
 arch_x86:
-	@RELEASE=false ARCH=x86 make
-	@RELEASE=true ARCH=x86 make
+	@(RELEASE=false ARCH=x86 make) && (RELEASE=true ARCH=x86 make)
 	
+arch_x86_64: arch_amd64
 arch_amd64:
-	@make arch_x86
-	@RELEASE=false ARCH=amd64 make
-	@RELEASE=true ARCH=amd64 make
+	@(RELEASE=false ARCH=amd64 make) && (RELEASE=true ARCH=amd64 make)
 	
+x86_64:	amd64
+amd64:
+	@(make arch_x86) && (make arch_amd64)
+
 arch_sparc:
-	@RELEASE=false ARCH=sparc make
-	@RELEASE=true ARCH=sparc make
+	@(RELEASE=false ARCH=sparc make) && (RELEASE=true ARCH=sparc make)
 
 arch_sparc64:
-	@make arch_sparc
-	@RELEASE=false ARCH=sparc64 make
-	@RELEASE=true ARCH=sparc64 make
+	@(RELEASE=false ARCH=sparc64 make) && (RELEASE=true ARCH=sparc64 make)
+
+sparc:
+	@(make arch_sparc) && (make arch_sparc64)
 
 cleanarch:
 	@echo "Doing only some ${ARCH} architecture cleanup..."
@@ -189,14 +196,20 @@ docs:
 
 help:
 	@echo -e "\
-USAGE: ARCH=[x86|amd64|sparc|sparc64|win32] RELEASE=[true|false] GCC=[command]  make [COMMAND]	\n\
-(If RELEASE is not given a release version is build)						\n\
-(If GCC is not given g++ is used)								\n\n\
+USAGE: ARCH=[x86|amd64|sparc|sparc64|win32] RELEASE=[true|false] make [COMMAND]			\n\
+ If RELEASE is not given a release version is build.						\n\
+ If ARCH is not defined, x86 is assumed.							\n\
+ If you want to use the Intel C++ compiler or the Sun Studio compiler instead of GCC		\n\
+ uncomment the lines in the Makefile.								\n\
+												\n\
 Available COMMANDs:\n\
  Build:\n\
   all		: Build up dependencies and the executable					\n\
   auto		: Build up dependencies and the executable with automatic ARCH detection	\n\
+  debug		: Build the executable with automatic ARCH detection and RELEASE=false		\n\
   arch_ARCH	: Build the project with ARCH (x86,amd64,sparc,sparc64,win32)			\n\
+  amd64		: Build the project for arch_x86 and arch_amd64					\n\
+  sparc		: Build the project for arch_sparc and arch_sparc64				\n\
  Run:\n\
   run		: Build all and execute the program						\n\
   rundebug	: Build all and execute the program with gdb					\n\

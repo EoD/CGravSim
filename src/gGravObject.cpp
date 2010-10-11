@@ -19,35 +19,35 @@ GravObject::GravObject(int i, long double m, long double r): id(i), mass(m), rad
 	pos = mlv();
 }
 
-void GravObject::setCoord(mlv& x) {
+void GravObject::setCoord(const mlv& x) {
 	pos = x;
 }	
-void GravObject::addCoords(mlv& x) {
+void GravObject::addCoords(const mlv& x) {
 	pos += x;
 }
 
-long double GravObject::getAbsMass() {
+long double GravObject::getAbsMass() const {
 	return mass;
 }
-long double GravObject::getSRTMass() {
+long double GravObject::getSRTMass() const {
 	//falls der v-vektor (0|0|0) ist, ist auch v=0
 	if(vel == 0) 
 		return mass;
 		
-	return (mass * gamma(dabsspeed()) );
+	return (mass * gamma(getAbsSpeed()) );
 }
-void GravObject::setMass(long double a) {
+void GravObject::setMass(const long double a) {
 	mass = a;
 }
-void GravObject::setMass(double a) {
+void GravObject::setMass(const double a) {
 	mass = (long double)a;
 }
 
-long double GravObject::getRadius() {
+long double GravObject::getRadius() const {
 	//debugout("getRadius() - returning", 5);
 	return radius;
 }	
-void GravObject::setRadius(long double a) {
+void GravObject::setRadius(const long double a) {
 	debugout("Masspoint - new Radius",11);
 	radius = a;
 }
@@ -60,25 +60,22 @@ void GravObject::setRadius(long double a) {
 //mit � über die Kugelfläche definierten � Radialkoordinaten r1 und r2 ist gr��er 
 //als die Differenz dieser Radien).
 //de.wikipedia.org/wiki/Ereignishorizont#Schwarzschild-Radius_und_Gravitationsradius
-long double GravObject::getSchwarzschildRadius() {
+long double GravObject::getSchwarzschildRadius() const {
 	//r = 2Gm / c^2
 	//debugout("getSchwarzschildRadius() - returning", 5);
 	return (2.0*GRAVCONST*getSRTMass())/powx(LIGHTSPEED, 2);
 }
 
-long double GravObject::drange(GravObject* mp2) {
+long double GravObject::drange(const GravObject* mp2) {
 	//long double drange = sqrtx(dx^2 + dy^2 + dz^2)
 	//MLVector mlvrange = MVMath.SubMV(this.getCoordMLV(), mp2.getCoordMLV());	
 	return abs((mdv)(mp2->pos - pos));
 }
 
-long double GravObject::dabsspeed() {
+long double GravObject::getAbsSpeed() const {
 	return abs(vel);
 }	
-long double GravObject::getAbsSpeed() {
-	return dabsspeed();
-}
-bool GravObject::setSpeed(mdv& v) {
+bool GravObject::setSpeed(const mdv& v) {
 	if(abs(v) > LIGHTSPEED)
 		return false;
 	else {
@@ -86,7 +83,7 @@ bool GravObject::setSpeed(mdv& v) {
 		return true;
 	}
 }
-bool GravObject::addSpeed(mdv& v) {
+bool GravObject::addSpeed(const mdv& v) {
 	if(abs(vel + v) > LIGHTSPEED)
 		return false;
 	else {
@@ -95,21 +92,21 @@ bool GravObject::addSpeed(mdv& v) {
 	}
 }
 
-long double GravObject::getVolume() {
+long double GravObject::getVolume() const {
 	return (4.0/3.0*powx(radius, 3))*PI;
 }
 
-long double GravObject::getSchwarzschildVolume() {
+long double GravObject::getSchwarzschildVolume() const {
 	return (4.0/3.0*powx(getSchwarzschildRadius(), 3))*PI;
 }
 
 /** Returns the relativistic impulse for the masspoint */
-mdv GravObject::getImpulse() {
+mdv GravObject::getImpulse() const {
 	return vel * getSRTMass();	//momentum = gamma*absmass*speed
 }
 
 /** Returns the relativistic energy for the masspoint */
-long double GravObject::getEnergy() {
+long double GravObject::getEnergy() const {
 	long double Energy = mass * LIGHTSPEED * LIGHTSPEED;
 	Energy *= Energy;
 	Energy += LIGHTSPEED * LIGHTSPEED + (getImpulse() * getImpulse());

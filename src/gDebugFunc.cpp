@@ -17,7 +17,7 @@ void debugout(std::string strdbg, int dbgprio) {
 #endif
 }
 
-void debugout(std::string strdbg, int var, int dbgprio) {
+void debugout(std::string strdbg, const int var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;
@@ -29,7 +29,7 @@ void debugout(std::string strdbg, int var, int dbgprio) {
 	}
 #endif
 }
-void debugout(std::string strdbg, long double var, int dbgprio) {
+void debugout(std::string strdbg, const long double var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;
@@ -41,7 +41,7 @@ void debugout(std::string strdbg, long double var, int dbgprio) {
 	}
 #endif
 }
-void debugout(std::string strdbg, mdv& var, int dbgprio) {
+void debugout(std::string strdbg, const mdv& var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;
@@ -53,7 +53,7 @@ void debugout(std::string strdbg, mdv& var, int dbgprio) {
 	}
 #endif
 }
-void debugout(std::string strdbg, long long var, int dbgprio) {
+void debugout(std::string strdbg, const long long var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;
@@ -65,7 +65,7 @@ void debugout(std::string strdbg, long long var, int dbgprio) {
 	}
 #endif
 }
-void debugout(std::string strdbg, mlv& var, int dbgprio) {
+void debugout(std::string strdbg, const mlv& var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;
@@ -78,7 +78,7 @@ void debugout(std::string strdbg, mlv& var, int dbgprio) {
 #endif
 }
 
-void debugout(std::string strdbg, std::string var, int dbgprio) {
+void debugout(std::string strdbg, const std::string var, int dbgprio) {
 #ifdef DEBUG
 	if (dbgprio > 100 || dbgprio < 0) {
 		dbgprio = 101;

@@ -14,24 +14,23 @@ public:
 
 	GravObject(int id=-1, long double mass=0., long double radius=0.);
 	
-	void setCoord(mlv& x);
-	void addCoords(mlv& x);
-	long double getAbsMass();
-	long double getSRTMass();
-	void setMass(long double a);
-	void setMass(double a);
-	long double getRadius();
-	void setRadius(long double a);
-	long double getSchwarzschildRadius();
-	long double drange(GravObject* mp2);
-	long double dabsspeed();
-	long double getAbsSpeed();
-	bool setSpeed(mdv& v);
-	bool addSpeed(mdv& v);
-	long double getVolume();
-	long double getSchwarzschildVolume();
-	mdv getImpulse();
-	long double getEnergy();
+	void setCoord(const mlv& x);
+	void addCoords(const mlv& x);
+	long double getAbsMass() const;
+	long double getSRTMass() const;
+	void setMass(const long double a);
+	void setMass(const double a);
+	long double getRadius() const;
+	void setRadius(const long double a);
+	long double getSchwarzschildRadius() const;
+	long double drange(const GravObject* mp2);
+	long double getAbsSpeed() const;
+	bool setSpeed(const mdv& v);
+	bool addSpeed(const mdv& v);
+	long double getVolume() const;
+	long double getSchwarzschildVolume() const;
+	mdv getImpulse() const;
+	long double getEnergy() const;
 };
 
 #endif

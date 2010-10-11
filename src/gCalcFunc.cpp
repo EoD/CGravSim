@@ -42,8 +42,8 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 		}
 
 		//distance between objects
-		mlv mlvdist(0);
-		mlvdist = mpsec->pos - mpmain->pos;
+		const mlv mlvdist = mpsec->pos - mpmain->pos;
+		const mdv mdvdist = mlvdist;
 		debugout("calcForce() - mlvdist=", mlvdist, 5);
 
 		//halb-relativistische Gravitations-Kraftberechnung
@@ -57,7 +57,7 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 		debugout("calcForce() - dforce2=", dforce, 5);
 		dforce *= GRAVCONST;
 		debugout("calcForce() - dforce3=", dforce, 5);
-		dforce /= (mdv)mlvdist * (mdv)mlvdist;
+		dforce /= mdvdist * mdvdist;
 		debugout("calcForce() - dforce4=", dforce, 5);
 
 		if (isnan(dforce)) {
@@ -73,8 +73,8 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 		//mdvrquot calculated with MDVector because 'radius' is r / r^3
 		mdv mdvrquot(0);
 		//Converted from long (mm) to double (meter)
-		debugout("calcForce() - abs(mlvdist)=", abs((mdv)mlvdist), 5);
-		mdvrquot = (mdv)mlvdist / abs((mdv)mlvdist);
+		debugout("calcForce() - abs(mdvdist)=", abs(mdvdist), 5);
+		mdvrquot = mdvdist / abs(mdvdist);
 		debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
 		//mdvrquot = MVMath.DivMVNum(MVMath.ConvertToD(mlvdist), MVMath.ConvertToD(mlvdist).abs()); 	// vec r / |r|
 		//debugout(" Mdvrquot.abs,r1,r2,r3: "+mdvrquot.abs()+","+mdvrquot.x1+","+mdvrquot.x2+","+mdvrquot.x3);
@@ -129,7 +129,8 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		
 	
 #ifdef _OPENMP
-	omp_set_num_threads(omp_get_num_procs() * omp_get_num_procs() / 2 + 1);
+	int numProcs = omp_get_num_procs();
+	omp_set_num_threads( numProcs * numProcs / 2 + 1);
 #endif
 	bool bkillloop = false;
 
@@ -172,37 +173,33 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		//debugout(" |MVforcetotal|,x1,x2,x3: "+mvforce.abs()+","+mvforce.x1+","+mvforce.x2+","+mvforce.x3);
 
 		//relativistic acceleration formula
-		//Math.sqrtx( Math.powx(LIGHTSPEED,2.0) - Math.powx(mpmain.getSpeed(),2.0) / Math.powx(LIGHTSPEED,2.0));
-		//TODO reform!
-		long double da1 = gamma(mpold->getAbsSpeed());
-		da1 *= powx(LIGHTSPEED, 2) * mvforce.x - mpold->vel.x * (mvforce * mpold->vel);
-		da1 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
+		const long double dLightspeed2 = powx(LIGHTSPEED, 2);
+		const long double dSpeedFactor1 = gamma(mpold->getAbsSpeed());
+		const long double dSpeedFactor2 = mvforce * mpold->vel;
+		const long double dMassFactor = dLightspeed2 * mpold->getAbsMass();
+	
+		long double da1 = dSpeedFactor1;
+		da1 *= dLightspeed2 * mvforce.x - mpold->vel.x * dSpeedFactor2;
+		da1 /= dMassFactor;
 
-		long double da2 = gamma(mpold->getAbsSpeed());
-		da2 *= powx(LIGHTSPEED, 2) * mvforce.y - mpold->vel.y * (mvforce * mpold->vel);
-		da2 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
+		long double da2 = dSpeedFactor1;
+		da2 *= dLightspeed2 * mvforce.y - mpold->vel.y * dSpeedFactor2;
+		da2 /= dMassFactor;
 
-		long double da3 = gamma(mpold->getAbsSpeed());
-		da3 *= powx(LIGHTSPEED, 2) * mvforce.z - mpold->vel.z * (mvforce * mpold->vel);
-		da3 /= powx(LIGHTSPEED, 2) * mpold->getAbsMass();
-		//debugout("calcAcc() -  Acceleration (a1,a2,a3): "+da1+","+da2+","+da3);
+		long double da3 = dSpeedFactor1;
+		da3 *= dLightspeed2 * mvforce.z - mpold->vel.z * dSpeedFactor2;
+		da3 /= dMassFactor;
 
-		debugout(" calcAcc() - da1:", da1, 5);
-		debugout(" calcAcc() - da2:", da2, 5);
-		debugout(" calcAcc() - da3:", da3, 5);
+		const mdv mva(da1, da2, da3);
+		debugout(" calcAcc() - da = ", mva, 5);
 
-		mdv mva(da1, da2, da3);
-		mdv deltav(0);
-
-		deltav = mva * dtime_step;
-
+		const mdv deltav = mva * dtime_step;
 		debugout(" calcAcc() - deltav: ", deltav, 5);
-		debugout(" calcAcc() - abs(deltav)+mpold->getAbsSpeed()=", abs(deltav)+mpold->getAbsSpeed(), 5);
-		//debugout("calcAcc() -  Delta-v (dv1,dv2,dv3): "+deltav.x1+","+deltav.x2+","+deltav.x3);
 
 		if (abs(deltav)+mpold->getAbsSpeed() > LIGHTSPEED) {
-			debugout("calcAcc() - Changing dtime_step", 15);
 #ifdef DEBUG
+			debugout("calcAcc() - Changing dtime_step", 15);
+			debugout("calcAcc() - abs(deltav)+mpold->getAbsSpeed()=", abs(deltav)+mpold->getAbsSpeed(), 5);
 			int count = 0;
 #endif
 			while ((LIGHTSPEED - mpold->getAbsSpeed()) / abs(mva) < dtime_step) {
@@ -234,21 +231,13 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 			cerrors |= cerror::lightspeed;;
 		}
 
-		//new function which produces new coords
-		mlv mlvds(0);
+		/*
+		 * new function which produces the new coordinates
+		 * calculates the delta-s (ds = v * dtime_step)
+		 * and converts mvspeed mdvector to mlvector
+		 */
+		const mlv mlvds = mpnew->vel * dtime_step;
 
-		//calculates the delta-s (ds = v * dtime_step)
-		//converts mvspeed mdvector to mlvector
-		//FIX requ?
-		mlvds = (mlv)(mpnew->vel * dtime_step);
-		//mlvds = MVMath.ProMVNum(MVMath.ConvertToL(mpold.getMDVSpeed()),dtime_step);
-		//debugout("calcAcc() -  |mdv-v|,v1,v2,v3: "+mpold.getMDVSpeed().abs()+","+mpold.getMDVSpeed().x1+","+mpold.getMDVSpeed().x2+","+mpold.getMDVSpeed().x3);
-		//debugout("calcAcc() -  |mlv-v|,v1,v2,v3: "+MVMath.ConvertToL(mpold.getMDVSpeed()).abs()+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x1+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x2+","+MVMath.ConvertToL(mpold.getMDVSpeed()).x3);
-		//debugout("calcAcc() -  |delta-s|,ds1,ds2,ds3: "+mlvds.abs()+","+mlvds.x1+","+mlvds.x2+","+mlvds.x3);
-
-		//new position = ds + old position
-		long long limit = 0;
-		++limit;
 		//TODO FIX really requ
 		/*		if(mpold->posx < 0)
 		 limit = LLONG_MIN - mpold->posx;
@@ -283,10 +272,10 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		 return vmpsout;
 		 }
 		 */
+		
+		/* New position = ds + old position */
 		mpnew->addCoords(mlvds);
 		debugout("calcAcc() - mlvds=",mlvds,5);
-		//mp.mlvpos = MVMath.AddMV(mlvds, mp.mlvpos);
-		//debugout("calcAcc() - ID "+mpnew.id+": New Coords(x1,x2,x3): "+mpnew.mlvpos.x1+" , "+mpnew.mlvpos.x2+" , "+mpnew.mlvpos.x3);	
 		debugout("calcAcc() - new (x,y,z)=",mpnew->pos,5);
 	}
 	if(bkillloop)
@@ -494,7 +483,7 @@ bool calc::checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	//diese for-schleife dient nur daf�r, dass die berechnung exakt wird, falls ein objekt �ber dpercentage% c kommt
 	std::vector<GravObject*>::iterator i;
 	for (i = pgs_test->objects.begin(); i != pgs_test->objects.end(); ++i) {
-		if ((*i)->dabsspeed() >= (dpercentage*LIGHTSPEED)) {
+		if ((*i)->getAbsSpeed() >= (dpercentage*LIGHTSPEED)) {
 			//debugout("checkSpeedBorder() - Object Nr."+i+"/"+mp.id+" has a speed larger "+dpercentage*100.0+"% lightspeed",10);
 			return true;
 		}

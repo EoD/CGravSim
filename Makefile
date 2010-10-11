@@ -40,6 +40,14 @@ DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
 #CFLAGS	= -fast +w -xarch=generic
 #DFLAGS	= -xM1 $< $(INCLUDES) 
 
+#######
+##ICC - Intel C++ Compiler
+#######
+#CC	= icc
+#LD	= icpc
+#CFLAGS	= -fast -xSSE2 -Wall -funroll-loops -openmp -parallel
+#DFLAGS	= -MM $< $(INCLUDES) -MT ${DIR_OBJ}$(basename $(notdir $<)).o
+
 INCLUDES = -I$(DIR_INC)
 
 ifeq ($(RELEASE),false) #The variable Release is set to false? then build with debug stuff

@@ -188,8 +188,8 @@ stats:
 	@cd $(DIR_INC) ; wc *
 
 tar:
-	@echo "Creating tar jgravsim_backend_`date +%Y%m%d%H%M%S`.tar.gz of important files:"
-	@tar cfvz jgravsim_backend_`date +%Y%m%d%H%M%S`.tar.gz Makefile ${DIR_SRC}* ${DIR_INC}* Gravity_Simulation_Backend.*
+	@echo "Creating tar cgravsim_`date +%Y%m%d-%H%M%S`.tgz of important files:"
+	@tar cfvz cgravsim_`date +%Y%m%d-%H%M%S`.tgz Makefile ${DIR_SRC}* ${DIR_INC}* CGravSim.*
 
 doc:
 	-@${MKDIR} ${DIR_DOC}
@@ -224,13 +224,13 @@ Available COMMANDs:\n\
   run		: Build all and execute the program						\n\
   rundebug	: Build all and execute the program with gdb					\n\
  Clean:\n\
-  clean		: Cleanup the whole project (obj, dep and exe folders will be fully purged)	\n\
+  clean		: Cleanup the whole project (obj, dep and ${DIR_EXE} folders will be purged)	\n\
   cleantmp	: Cleanup all temporary folders (obj and dep folders will be purged)		\n\
   cleanarch	: Cleanup parts of the project (obj_ARCH and dep_ARCH folders will be purged)	\n\
   cleandoc	: Delete the folders ${DIR_DOC}html and ${DIR_DOC}latex				\n\
  Others:\n\
-  stats		: Calculate wc-stats of src/ and inc/						\n\
-  tar		: Create a tar of inc/ src/ Makefile and Gravity_Simulation_Backend.*		\n\
+  stats		: Calculate wc-stats of ${DIR_SRC} and ${DIRC_INC}				\n\
+  tar		: Create a tar of ${DIR_INC}, ${DIR_SRC} Makefile and CGravSim.*		\n\
   doc		: Create documentation with doxygen inside of ${DIR_DOC}			\n"
 
 -include $(DEP_FILES)

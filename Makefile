@@ -17,6 +17,7 @@ DIR_SRC = src/
 DIR_INC = inc/
 DIR_EXE = exe/
 DIR_DEP = dep_${ARCH}/
+DIR_DOC = docs/
 
 DBG_PROG = gdb --ex run --args
 MKDIR	= mkdir -p
@@ -190,9 +191,18 @@ tar:
 	@echo "Creating tar jgravsim_backend_`date +%Y%m%d%H%M%S`.tar.gz of important files:"
 	@tar cfvz jgravsim_backend_`date +%Y%m%d%H%M%S`.tar.gz Makefile ${DIR_SRC}* ${DIR_INC}* Gravity_Simulation_Backend.*
 
-docs:
-	-${MKDIR} doc/
-	doxygen doc/Doxyfile
+doc:
+	-@${MKDIR} ${DIR_DOC}
+	@(cat ${DIR_DOC}doxygen.conf | sed \
+		-e "s,REVISION,`git ls-remote . | grep -i "heads/\`git branch | sed -e 's,\*.,,'\`" | sed 's/[ \t\r\n\v\f].*//'`,"	\
+		-e "s,BVERSION,`cat ${DIR_INC}gDefines.h | grep BVERSION | sed 's/^.*BVERSION.\(.*\).*$/\1/'`,"	\
+		-e "s,DIR_DOC,${DIR_DOC},"	\
+		-e "s,DIR_INC,${DIR_INC},"	\
+		-e "s,DIR_SRC,${DIR_SRC}," 	\
+		)| doxygen -
+cleandoc:
+	-@${RM} ${DIR_DOC}html
+	-@${RM} ${DIR_DOC}latex
 
 help:
 	@echo -e "\
@@ -217,8 +227,10 @@ Available COMMANDs:\n\
   clean		: Cleanup the whole project (obj, dep and exe folders will be fully purged)	\n\
   cleantmp	: Cleanup all temporary folders (obj and dep folders will be purged)		\n\
   cleanarch	: Cleanup parts of the project (obj_ARCH and dep_ARCH folders will be purged)	\n\
+  cleandoc	: Delete the folders ${DIR_DOC}html and ${DIR_DOC}latex				\n\
  Others:\n\
   stats		: Calculate wc-stats of src/ and inc/						\n\
-  tar		: Create a tar of inc/ src/ Makefile and Gravity_Simulation_Backend.*		\n"
+  tar		: Create a tar of inc/ src/ Makefile and Gravity_Simulation_Backend.*		\n\
+  doc		: Create documentation with doxygen inside of ${DIR_DOC}			\n"
 
 -include $(DEP_FILES)

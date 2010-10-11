@@ -1,6 +1,8 @@
 exe/
 dep*/
 obj*/
+docs/html
+docs/latex
 
 #VS files
 *.ncb

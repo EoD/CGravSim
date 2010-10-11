@@ -8,8 +8,10 @@
 #include "gDebugFunc.h"
 #include "gGravDataSet.h"
 
+const std::string GravDataSet::strEmpty = "";
+
 GravDataSet::GravDataSet() {
-	strVersion = "";
+	strVersion = strEmpty;
 	llnumSteps=0;
 	drTime=0.0;
 }
@@ -21,7 +23,7 @@ GravDataSet::~GravDataSet() {
 }
 
 void GravDataSet::empty() {
-	strVersion = "";
+	strVersion = strEmpty;
 	llnumSteps = 0;
 	drTime = 0.0;
 	std::vector<GravStep*>::iterator i;
@@ -53,10 +55,10 @@ bool GravDataSet::loadFile(std::string file) {
 	}
 
 	if (std::getline(ifs, line)) {
-		fp = line.find_first_not_of(";"); // find letter after first seperator
-		if (fp != std::string::npos && line.substr(fp, line.length()-1-fp)!= "") // to avoid failures with lines only containing " "
-		{
-			sp = line.find_first_of(";", fp); // find next seperator
+		fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+		/* to avoid failures with empty lines */
+		if (fp != std::string::npos && !line.substr(fp, line.length()-1-fp).empty() ) {
+			sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 			if (sp != std::string::npos) {
 				strVersion = line.substr(fp, sp-fp); //extract strVersion
 				line.erase(0, sp); //cut line
@@ -64,10 +66,10 @@ bool GravDataSet::loadFile(std::string file) {
 				debugout("loadFile() - Failure 1", 99);
 				return false;
 			}
-			fp = line.find_first_not_of(";"); // find letter after first seperator
-			sp = line.find_first_of(";", fp); // find next seperator
+			fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+			sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 			if (sp != std::string::npos) {
-				sstr.str(""); // empty stream
+				sstr.str(strEmpty);
 				sstr.clear(); // clear Flags
 				sstr << line.substr(fp, sp-fp); //extract numSteps
 				sstr >> llnumSteps;
@@ -76,10 +78,10 @@ bool GravDataSet::loadFile(std::string file) {
 				debugout("loadFile() - Failure 2", 99);
 				return false;
 			}
-			fp = line.find_first_not_of(";"); // find letter after first seperator
-			sp = line.find_first_of(";", fp); // find next seperator
+			fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+			sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 			if (sp == std::string::npos) {
-				sstr.str(""); // empty stream
+				sstr.str(strEmpty);
 				sstr.clear(); // clear Flags
 				sstr << line.substr(fp, line.length()-LINEDELIMNUM-fp); //extract rTime and cut off "\n" at the end
 				sstr >> drTime;
@@ -105,10 +107,10 @@ bool GravDataSet::loadFile(std::string file) {
 		if (line.length()> 1) {
 			if (line.at(0)== '#') {
 				line.erase(0, 1); //delete first letter
-				fp = line.find_first_not_of(";"); // find letter after first seperator
-				sp = line.find_first_of(";", fp); // find next seperator
+				fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+				sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 				if (sp != std::string::npos) {
-					sstr.str(""); // empty stream
+					sstr.str(strEmpty);
 					sstr.clear(); // clear Flags	
 					debugout("loadFile() - sstr0=",line, 5);
 					sstr << line.substr(fp, sp-fp); //extract stepNumber
@@ -120,10 +122,10 @@ bool GravDataSet::loadFile(std::string file) {
 					debugout("loadFile() - Failure 6", 99);
 					return false;
 				}
-				fp = line.find_first_not_of(";"); // find letter after first seperator
-				sp = line.find_first_of(";", fp); // find next seperator
+				fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+				sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 				if (sp == std::string::npos) {
-					sstr.str(""); // empty stream
+					sstr.str(strEmpty);
 					sstr.clear(); // clear Flags					
 					debugout("loadFile() - sstr3=",line, 5);
 					sstr << line.substr(fp, line.length()-LINEDELIMNUM-fp); //extract numObjects and cut of (\r)"\n" at the end
@@ -138,14 +140,13 @@ bool GravDataSet::loadFile(std::string file) {
 				//step->numObjects = numObjects;
 				steps.push_back(step);
 			} else if (stepNum != -1 && numObjects > 0) {
-				fp = line.find_first_not_of(";"); // find letter after first seperator
-				if (fp != std::string::npos && line.substr(fp,
-						line.length()-1-fp)!= "") // to avoid failures with lines only containing " "
-				{
+				fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+				/* to avoid failures with empty lines */
+				if (fp != std::string::npos && !line.substr(fp, !line.length()-1-fp).empty() ) {
 					int objectID;
-					sp = line.find_first_of(";", fp); // find next seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract objectID
 						sstr >> objectID;
@@ -156,10 +157,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 8", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract mass
 						debugout("loadFile() - mass0=",line.substr(fp, sp-fp), 5);
@@ -170,10 +171,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 9", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract radius
 						sstr >> obj->radius;
@@ -182,10 +183,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 10", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity x
 						sstr >> obj->vel.x;
@@ -194,10 +195,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 11", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity y
 						sstr >> obj->vel.y;
@@ -206,10 +207,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 12", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract velocity z
 						sstr >> obj->vel.z;
@@ -218,10 +219,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 13", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract position x
 						sstr >> obj->pos.x;
@@ -230,10 +231,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 17", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp != std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, sp-fp); //extract position y
 						sstr >> obj->pos.y;
@@ -242,10 +243,10 @@ bool GravDataSet::loadFile(std::string file) {
 						debugout("loadFile() - Failure 18", 99);
 						return false;
 					}
-					fp = line.find_first_not_of(";"); // find letter after first seperator
-					sp = line.find_first_of(";", fp); // find next seperator
+					fp = line.find_first_not_of(DELIMDATA); // find letter after first seperator
+					sp = line.find_first_of(DELIMDATA, fp); // find next seperator
 					if (sp == std::string::npos) {
-						sstr.str(""); // empty stream
+						sstr.str(strEmpty);
 						sstr.clear(); // clear Flags
 						sstr << line.substr(fp, line.length()-LINEDELIMNUM-fp); //extract position z and cut of "\n" at the end
 						sstr >> obj->pos.z;

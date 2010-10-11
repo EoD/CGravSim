@@ -11,6 +11,8 @@ public:
 	GravDataSet(std::string file);
 	~GravDataSet();
 
+	static const std::string strEmpty;
+
 	std::string strVersion;
 	long long llnumSteps;
 	long double drTime;

@@ -92,11 +92,11 @@ CFLAGS += -m64
 endif
 
 ifeq ($(ARCH),sparc)
-CFLAGS += -m32
+CFLAGS += -mtune=ultrasparc -mcpu=v9 -m32
 endif
 
 ifeq ($(ARCH),sparc64)
-CFLAGS += -m64
+CFLAGS += -mtune=ultrasparc -mcpu=v9 -m64
 endif
 
 

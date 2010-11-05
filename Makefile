@@ -18,6 +18,7 @@ DIR_INC = inc/
 DIR_EXE = exe/
 DIR_DEP = dep_${ARCH}/
 DIR_DOC = docs/
+DIR_TOOLS = tools/
 
 DBG_PROG = gdb --ex run --args
 MKDIR	= mkdir -p
@@ -193,16 +194,17 @@ tar:
 
 doc:
 	-@${MKDIR} ${DIR_DOC}
-	@(cat ${DIR_DOC}doxygen.conf | sed \
-		-e "s,REVISION,`git ls-remote . | grep -i "heads/\`git branch | sed -e 's,\*.,,'\`" | sed 's/[ \t\r\n\v\f].*//'`,"	\
-		-e "s,BVERSION,`cat ${DIR_INC}gDefines.h | grep BVERSION | sed 's/^.*BVERSION.\(.*\).*$/\1/'`,"	\
-		-e "s,DIR_DOC,${DIR_DOC},"	\
-		-e "s,DIR_INC,${DIR_INC},"	\
-		-e "s,DIR_SRC,${DIR_SRC}," 	\
+	@(cat ${DIR_TOOLS}doxygen.conf | sed \
+		-e "s,@REVISION@,`git ls-remote . | grep -i "heads/\`git branch | sed -e 's,\*.,,'\`" | sed 's/[ \t\r\n\v\f].*//'`,"	\
+		-e "s,@BVERSION@,`cat ${DIR_INC}gDefines.h | grep BVERSION | sed 's/^.*BVERSION.\(.*\).*$/\1/'`,"	\
+		-e "s,@DIR_TOOLS@,${DIR_TOOLS},"	\
+		-e "s,@DIR_DOC@,${DIR_DOC},"	\
+		-e "s,@DIR_INC@,${DIR_INC},"	\
+		-e "s,@DIR_SRC@,${DIR_SRC}," 	\
 		)| doxygen -
 cleandoc:
-	-@${RM} ${DIR_DOC}html
-	-@${RM} ${DIR_DOC}latex
+	-@${RM} ${DIR_DOC}
+	-@${MKDIR} ${DIR_DOC}
 
 help:
 	@echo -e "\

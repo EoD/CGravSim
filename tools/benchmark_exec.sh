@@ -43,12 +43,6 @@ revdate=`git log --date=${REVTIME_FORMAT} -1 ${revision} | grep Date | sed -e 's
 filename="${inputfile}$STAT"
 tempfile="${inputfile}$TMP"
 
-echo -e -n "${exename}\t\"${revdate}\"" >> "${filename}"
-if [ $verbose ]; then
-	echo >> "${filename}"
-	echo >> "${filename}"
-fi
-
 execution() {
 	if [ $output ]; then
 		cp "${inputfile}" "${tempfile}"
@@ -80,7 +74,11 @@ rm "${tempfile}"
 
 user_cut=`echo "scale=${accuracy};$user / $LOOPS" | bc | sed -e 's,^\.,0\.,'`
 sys_cut=`echo "scale=${accuracy};$sys / $LOOPS" | bc | sed -e 's,^\.,0\.,'`
+
+echo -e -n "${exename}\t\"${revdate}\"" >> "${filename}"
 if [ $verbose ]; then
+	echo >> "${filename}"
+	echo >> "${filename}"
 	echo " ${LOOPS} executions" >> "${filename}"
 	echo -e " ${user_cut}\t${USER}" >> "${filename}"
 	echo -e " ${sys_cut}\t${SYS}" >> "${filename}"

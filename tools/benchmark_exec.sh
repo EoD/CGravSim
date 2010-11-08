@@ -51,7 +51,7 @@ execution() {
 		#extract number of steps, replace the timestep with ONE huge one
 		#and calculate with the old timestep at the end
 		steps=`cat "${inputfile}" | head -n 1 | sed -e 's/.*;\(.*\);.*/\1/'`
-		timestep=`cat "${inputfile}" | head -n 1 | sed -e 's/.*;.*;\(.*\)[ \t\r\n\v\f]/\1/'`
+		timestep=`cat "${inputfile}" | head -n 1 | sed -e 's/.*;.*;\(.*\)[ \t\r\n\v\f]*/\1/' -e 's,,,g'`
 		timestep_new=`echo "$steps * $timestep" | bc`
 		
 		cat "${inputfile}" | sed -e "1 s/\(.*\);.*;.*/\1;1;$timestep_new/" > "${tempfile}"

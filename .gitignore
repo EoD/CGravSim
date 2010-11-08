@@ -8,3 +8,9 @@ docs/latex
 *.ncb
 *.suo
 *.user
+
+#data files
+*.wpt
+*.wpt.gz
+*.stats
+*.tmp

@@ -20,6 +20,10 @@ fi
 command="set ylabel \"user [s]\"; set ytics; "
 command+="set xlabel \"revision\"; "
 command+="set title \"CGravSim benchmark\"; "
+if [[ -n "$file" && -n "$size" ]]; then
+       type="`echo $file | sed -e 's,.*\.\(.*\),\1,'`"
+       command+="set term $type size $size; set out '${file}'; "
+fi
 
 i=0
 for inputfile in "$@"

@@ -17,7 +17,8 @@ else
 	echo
 fi
 
-command="set ylabel \"user [ms]\"; set ytics; "
+command="set ylabel \"user [s]\"; set ytics; "
+command+="set xlabel \"revision\"; "
 command+="set title \"CGravSim benchmark\"; "
 
 i=0
@@ -45,6 +46,8 @@ done
 
 echo
 echo "$command" | gnuplot -persist -
+
+echo Waiting 10s before I delete the temporary plot files && sleep 10
 for inputfile in "$@"; do
 	rm "$inputfile$TMP"
 done

@@ -15,6 +15,7 @@ namespace calc {
 		const bitset<ERROR_CALC_MAX> limit_long	( ERROR_TO_BITSET(ERROR_CALC_LIMIT_LONG) );
 		const bitset<ERROR_CALC_MAX> limit_dbl	( ERROR_TO_BITSET(ERROR_CALC_LIMIT_DOUBLE) );
 		const bitset<ERROR_CALC_MAX> nan	( ERROR_TO_BITSET(ERROR_CALC_NAN) );
+		const bitset<ERROR_CALC_MAX> grt	( ERROR_TO_BITSET(ERROR_CALC_GRT) );
 	}
 
 	extern std::bitset<ERROR_CALC_MAX> cerrors;

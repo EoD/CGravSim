@@ -450,14 +450,10 @@ GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 			if (mpj->getRadius() < mpj->getSchwarzschildRadius())
 				jradius = mpj->getSchwarzschildRadius();
 
-			//if objects have a distance less than 2*Schwarzschild Radius the calculation gets very imprecisely
-			//TODO FIX required!
-			//if(myController.flagschwarzschild == false && mpi.drange(mpj) < 2*(mpj.getSchwarzschildRadius()+mpi.getSchwarzschildRadius())) {
-			//	myController.flagschwarzschild = true;
-			//}
-
-			//debugout("collisionCheck() - radius collected",4);
-
+			/* if objects have a distance less than 2*Schwarzschild radius the calculation gets very unprecise */
+			if( !cerrors.test(ERROR_CALC_GRT) && mpi->drange(mpj) < 2.0*(mpi->getSchwarzschildRadius() + mpj->getSchwarzschildRadius()) )
+				cerrors |= cerror::grt;
+		
 			//WARNING HACK TODO remove
 			if (mpi->drange(mpj) < (iradius+jradius)) {
 				debugout("collisionCheck() - range: ", mpi->drange(mpj), 10); //- Object "+mpi->id+" collided with Object"+mpj->id);

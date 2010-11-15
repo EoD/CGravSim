@@ -87,13 +87,14 @@
 #define ERROR_FILE_OUT	2
 #define ERROR_CALC	3
 
-#define ERROR_CALC_MAX		6
+#define ERROR_CALC_MAX		7
 #define ERROR_CALC_UNKNOWN	0	/* an unknown/not specified error occured */
 #define ERROR_CALC_DATA		1	/* only one object left or bad radius/mass values */
 #define ERROR_CALC_LIGHTSPEED	2	/* object got a speed > c during calculations */
 #define ERROR_CALC_LIMIT_LONG	3	/* the coordination of an object reached the LLONG limit */
 #define ERROR_CALC_LIMIT_DOUBLE	4	/* reached LDBL_MIN limit during auto timestep correction */
 #define ERROR_CALC_NAN		5	/* calculation of force returned nan */
+#define ERROR_CALC_GRT		6	/* two objects got a distance less than 2*Schwarzschild radius */
 
 #define ERROR_TO_BITSET(x) (unsigned long)(ldexp(1.0f, x))
 

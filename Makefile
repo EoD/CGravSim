@@ -27,7 +27,11 @@ RM	= rm -rf
 ##GCC - default compiler
 #######
 #GCC 4.6: (-Ofast) == (-O3 -ffast-math) maybe also -D_GLIBCXX_PARALLEL
-CFLAGS	= -Wall -fopenmp -mtune=generic
+CFLAGS	= -Wall -fopenmp
+CFLAGS_i686	= -march=native
+CFLAGS_sparc	= -mcpu=ultrasparc
+#bindist CFLAGS_i686	= -march=pentium3 -mtune=generic
+#bindist CFLAGS_sparc	= -mcpu=v9
 CFLAGS_RELEASE	= -g -O3 -ffast-math -funroll-loops
 CFLAGS_DEBUG	= -g3 -pedantic -Wno-long-long -Wextra
 CC	= ${CROSS_COMPILE}g++
@@ -84,19 +88,19 @@ OBJ_FILES := $(OBJ_FILES_TMP:$(DIR_SRC)%=$(DIR_OBJ)%)
 
 
 ifeq ($(ARCH),x86)
-CFLAGS += -m32
+CFLAGS += ${CFLAGS_i686} -m32
 endif
 
 ifeq ($(ARCH),amd64)
-CFLAGS += -m64
+CFLAGS += ${CFLAGS_i686} -m64
 endif
 
 ifeq ($(ARCH),sparc)
-CFLAGS += -mtune=ultrasparc -mcpu=v9 -m32
+CFLAGS += ${CFLAGS_sparc} -m32
 endif
 
 ifeq ($(ARCH),sparc64)
-CFLAGS += -mtune=ultrasparc -mcpu=v9 -m64
+CFLAGS += ${CFLAGS_sparc} -m64
 endif
 
 

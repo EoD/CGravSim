@@ -206,7 +206,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #ifdef DEBUG
 				count++;
 #endif
-				if (dtime_step <= 10.0*LDBL_MIN) { //TODO FIX REQUIRED java.lang.Double.MIN_VALUE) {
+				if (dtime_step <= 10.0*LDBL_MIN) {
 					debugout("calcAcc - ERROR double-limit reached!");
 					flagcalc = false;
 					cerrors |= cerror::limit_dbl;

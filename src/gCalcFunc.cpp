@@ -97,30 +97,7 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 
 GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	//Vector<Masspoint> vmpsout = new Vector<Masspoint>();
-#ifdef DEBUG
-	std::vector<GravObject*>::reverse_iterator j;
-	std::cout << "  vmpsinsert Objectlist ("<< vmpsinsert->numObjects <<" elements) :" << std::endl;
-	(std::cout).precision(DATAPRECISION);
-	int count = 0;
-	for (j = (vmpsinsert)->objects.rbegin(); j != (vmpsinsert)->objects.rend(); ++j) {
-		std::cout << "  ID: " << (*j)->id << ", ";
-		std::cout << "  Mass: " << (*j)->mass << ", ";
-		std::cout << "  Radius: " << (*j)->radius << ", ";
-		std::cout << "  vel: " << (*j)->vel << ", ";
-		std::cout << "  pos: " << (*j)->pos << std::endl;
-		std::cout << " count: " << count++ << std::endl;
-
-		if((*j)->mass <= 0 || (*j)->radius <= 0) {
-			debugout("calcAcc() - Var ERROR0",99);
-			return 0;
-		}
-	}
-	if(count < 1) {
-		debugout("calcAcc() - ERROR0, help",99);
-		flagcalc = false;
-		return 0;
-	}
-#endif
+	debugout("calcAcc() - vmpsinsert Objectlist", vmpsinsert->objects, 5);
 	//TODO Fix? vmpsout.addAll(vmpsinsert);
 	//debugout("ID 0: Old Coords(x1,x2,x3): "+((Masspoint)masspoints.get(0)).mlvpos.x1+","+((Masspoint)masspoints.get(0)).mlvpos.x2+","+((Masspoint)masspoints.get(0)).mlvpos.x3);
 	//debugout("ID 1: Old Coords(x1,x2,x3): "+((Masspoint)masspoints.get(1)).mlvpos.x1+","+((Masspoint)masspoints.get(1)).mlvpos.x2+","+((Masspoint)masspoints.get(1)).mlvpos.x3);
@@ -281,30 +258,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	if(bkillloop)
 		return NULL;
 
-#ifdef DEBUG
-	//std::vector<GravObject*>::reverse_iterator j;
-	std::cout << "  vmpsout Objectlist ("<< vmpsout->numObjects <<" elements) :" << std::endl;
-	(std::cout).precision(DATAPRECISION);
-	count = 0;
-	for (j = (vmpsout)->objects.rbegin(); j != (vmpsout)->objects.rend(); ++j) {
-		std::cout << "  ID: " << (*j)->id << ", ";
-		std::cout << "  Mass: " << (*j)->mass << ", ";
-		std::cout << "  Radius: " << (*j)->radius << ", ";
-		std::cout << "  vel: " << (*j)->vel << ", ";
-		std::cout << "  pos: " << (*j)->pos << std::endl;
-		count ++;
-
-		if((*j)->mass <= 0 || (*j)->radius <= 0) {
-			debugout("calcAcc() - Var ERROR1",99);
-			return 0;
-		}
-	}
-	if(count < 1) {
-		debugout("calcAcc() - ERROR1, help",99);
-		flagcalc = false;
-		return 0;
-	}
-#endif
+	debugout("calcAcc() - vmpsout Objectlist", vmpsout->objects, 5);
 	debugout("calcAcc() - Finish", 5); //, size="+vmpsout.size());	
 	return vmpsout;
 }
@@ -507,31 +461,9 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 
 		//Collision-Check
 		if (pgs_temp == NULL && pgs_start != NULL) {
-#ifdef DEBUG
-			std::vector<GravObject*>::reverse_iterator j;
-			std::cout << "  pgs_start Objectlist ("<< pgs_start->numObjects <<" elements) :" << std::endl;
-			(std::cout).precision(DATAPRECISION);
-			int count = 0;
-			for (j = (pgs_start)->objects.rbegin(); j != (pgs_start)->objects.rend(); ++j) {
-				std::cout << "  ID: " << (*j)->id << ", ";
-				std::cout << "  Mass: " << (*j)->mass << ", ";
-				std::cout << "  Radius: " << (*j)->radius << ", ";
-				std::cout << "  vel: " << (*j)->vel << ", ";
-				std::cout << "  pos: " << (*j)->pos << std::endl;
-				count ++;
+			debugout("master() - pgs_start Objectlist", pgs_start->objects, 65);
+			debugout("CalcCode - First Collision Check starting", 5);
 
-				if((*j)->mass <= 0 || (*j)->radius <= 0) {
-					debugout("CalcCode() - Var ERROR1",99);
-					return cerrors |= cerror::data;
-				}
-			}
-			if(count < 1) {
-				debugout("CalcCode() - ERROR1, help",99);
-				flagcalc = false;
-				return cerrors |= cerror::data;
-			}
-#endif
-			//debugout("CalcCode - First Collision Check starting",15);
 			if(flag_collision) {
 				pgs_current = collisionCheck(pgs_start);
 			} else {
@@ -540,32 +472,10 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 			}
 			//empty start GravStep object and use it for temporary calcs/vars
 			//pgs_temp = pgs_start;
-#ifdef DEBUG
-			std::vector<GravObject*>::reverse_iterator k;
-			std::cout << "  pgs_current Objectlist ("<< pgs_current->numObjects <<" elements) :" << std::endl;
-			(std::cout).precision(DATAPRECISION);
-			count = 0;
-			for (k = (pgs_current)->objects.rbegin(); k != (pgs_current)->objects.rend(); ++k) {
-				std::cout << "  ID: " << (*k)->id << ", ";
-				std::cout << "  Mass: " << (*k)->mass << ", ";
-				std::cout << "  Radius: " << (*k)->radius << ", ";
-				std::cout << "  vel: " << (*k)->vel << ", ";
-				std::cout << "  pos: " << (*k)->pos << std::endl;
-				count ++;
-
-				if((*k)->mass <= 0 || (*k)->radius <= 0) {
-					debugout("CalcCode() - Var ERROR2",99);
-					return cerrors |= cerror::data;
-				}
-			}
-			if(count < 1) {
-				debugout("CalcCode() - ERROR2, help",99);
-				flagcalc = false;
-				return cerrors |= cerror::data;
-			}
-#endif
 			//pgs_start->empty();
 			debugout("CalcCode - First Collision Check survived", 4);
+			debugout("master() - pgs_current Objectlist", pgs_current->objects, 15);
+
 			if (pgs_current) {
 				debugout("CalcCode - if(pgs_current) survived", 4);
 				pgs_start->empty();
@@ -581,30 +491,7 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 		}
 		//the case that a new dt was found there would be problems (temp==0 && start==0)
 		else if (pgs_temp != NULL && pgs_start == NULL) {
-#ifdef DEBUG
-			std::vector<GravObject*>::reverse_iterator j;
-			std::cout << "  pgs_temp Objectlist:" << std::endl;
-			(std::cout).precision(DATAPRECISION);
-			int count = 0;
-			for (j = (pgs_temp)->objects.rbegin(); j != (pgs_temp)->objects.rend(); ++j) {
-				std::cout << "  ID: " << (*j)->id << ", ";
-				std::cout << "  Mass: " << (*j)->mass << ", ";
-				std::cout << "  Radius: " << (*j)->radius << ", ";
-				std::cout << "  vel: " << (*j)->vel << ", ";
-				std::cout << "  pos: " << (*j)->pos << std::endl;
-				count++;
-
-				if((*j)->mass <= 0 || (*j)->radius <= 0) {
-					debugout("CalcCode() - Var ERROR3",99);
-					return cerrors |= cerror::data;
-				}
-			}
-			if(count < 1) {
-				debugout("CalcCode() - ERROR3, help",99);
-				flagcalc = false;
-				return cerrors |= cerror::data;
-			}
-#endif
+			debugout("master() - pgs_temp Objectlist", pgs_temp->objects, 20);
 			debugout("CalcCode - Collision Check starting", 7);
 			if (pgs_current) {
 				debugout("CalcCode - Collision Check survived", 7);

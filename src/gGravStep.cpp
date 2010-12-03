@@ -52,23 +52,12 @@ GravObject* GravStep::addnew(GravObject* pgo) {
 }
 
 bool GravStep::savetofile(std::ofstream& ofs, const unsigned int stepid) {
-#ifdef DEBUG
-	std::vector<GravObject*>::iterator j;
-	std::cout << "  savetofile Objectlist:" << std::endl;
-	(std::cout).precision(DATAPRECISION);
-	for (j = objects.begin(); j != objects.end(); ++j) {
-			std::cout << "  ID: " << (*j)->id << ", ";
-			std::cout << "  Mass: " << (*j)->mass << ", ";
-			std::cout << "  Radius: " << (*j)->radius << ", ";
-			std::cout << "  vel: " << (*j)->vel << ", ";
-			std::cout << "  pos: " << (*j)->pos << std::endl;
-	}
-#endif
 	
 	if (!ofs) {
 		debugout("savetofile() - No File found!", 99);
 		return false;
 	}
+	debugout("savetofile() - Objectlist", objects, 15);
 	
 	ofs << "#" << stepid << ";" << numObjects << DELIMLINE;
 	ofs.precision(DATAPRECISION);

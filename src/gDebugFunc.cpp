@@ -119,3 +119,35 @@ void debugout(std::string strdbg) {
 void debugout(std::string /* strdbg */) { }
 #endif
 
+#ifdef __INTEL_COMPILER
+ #pragma warning (disable:981) /* remark #981: operands are evaluated in unspecified order */
+#endif
+void debugout(std::string name, const std::vector<GravObject*> & objects, int dbgprio) {
+#ifdef DEBUG
+	if (dbgprio > 100 || dbgprio < 0) {
+		dbgprio = 101;
+	}
+	if (101 - dbgprio <= DEBUG) {
+		const size_t size = objects.size();
+		std::cout << " " << name << " (size = "<< size << ")" << std::endl;
+		(std::cout).precision(DATAPRECISION);
+
+		int id = -1;
+		for (std::vector<GravObject*>::size_type i = 0; i < size; ++i) {
+			id = objects[i]->id;
+			std::cout << "  ID:";
+			if (id < 10)
+				std::cout << " ";
+			if (id < 100)
+				std::cout << " ";
+			if (id < 1000)
+				std::cout << " ";
+			std::cout << id << ", ";
+			std::cout << "  Mass: " << objects[i]->mass << ", ";
+			std::cout << "  Radius: " << objects[i]->radius << ", ";
+			std::cout << "  vel: " << objects[i]->vel << ", ";
+			std::cout << "  pos: " << objects[i]->pos << std::endl;
+		}
+	}
+#endif
+}

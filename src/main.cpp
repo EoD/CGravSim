@@ -109,24 +109,8 @@ int main(int argc, char* pArgs[]) {
 		std::cout << "Collision: " << (calc::flag_collision?"en":"dis") << "abled" << std::endl;
 
 		std::vector<GravStep*>::iterator i = pgdsStart->steps.begin();
-#ifdef DEBUG
-		int count = 0;
-		std::vector<GravObject*>::iterator j;
-		debugout("Main() - For loop starts. No of elements: ",(*i)->numObjects, 15);
-		for (j = (*i)->objects.begin(); j != (*i)->objects.end(); ++j) {
-			std::cout << "Main() - Loop No: " << count << std::endl;
-//			if ((*j)->type == 0) {	//deprecated
-				// add a Planet
 
-				std::cout << "  ID: " << (*j)->id << std::endl;
-				std::cout << "  Mass: " << (*j)->mass << std::endl;
-				std::cout << "  Radius: " << (*j)->radius << std::endl;
-				std::cout << "  vel: " << (*j)->vel << std::endl;
-				std::cout << "  pos: " << (*j)->pos << std::endl;
-//			}
-			count++;
-		}
-#endif
+		debugout("main() - objects to start with", (*i)->objects, 15);
 
 		std::cout << "All Data loaded!" << std::endl;
 

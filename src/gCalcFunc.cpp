@@ -4,15 +4,6 @@
 #include <iostream>
 #include <fstream>
 
-/*
-#ifdef DEBUG
-#ifndef DEBUG_INC_GRAVITY_CALCFUNC
-#define DEBUG_INC_GRAVITY_CALCFUNC DEBUG
-#undef DEBUG
-#endif
-#endif
-*/
-
 #include "gDefines.h"
 #include "gCalcFunc.h"
 #include "gMathFunc.h"
@@ -24,10 +15,16 @@ bool calc::flagcalc = true;
 long double calc::dtime_step = 0;
 bool calc::flag_collision = true;
 
-//Berechnet die Kraft auf ein referenz objekt (mpmain)
-//Kraft entsteht durch grav-wirkung aller anderen
+/** 
+ * Calculcate the force between reference object and all the other 
+ * objects in the GravStep
+ *
+ * @param mpmain	pointer to the reference object
+ * @param vmpsinsert	GravStep* which we calculate against
+ * @param mdvforcetotal	mdv& the resulting total force for that object
+ * @return		the error value (ERROR_NONE or ERROR_CALC_NAN)
+ */
 int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
-	//MDVector mdvforcetotal = new MDVector(0,0,0);
 	mdvforcetotal = mdv(0);
 
 	debugout("calcForce() - START ID: ",mpmain->id,5);
@@ -43,6 +40,7 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 
 		//distance between objects
 		const mlv mlvdist = mpsec->pos - mpmain->pos;
+		//Converted from long (mm) to double (meter)
 		const mdv mdvdist = mlvdist;
 		debugout("calcForce() - mlvdist=", mlvdist, 5);
 
@@ -64,46 +62,45 @@ int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal
 			debugout("calcForce() - dforce is NaN - ERROR", 99);
 			return ERROR_CALC_NAN;
 		}
-		//debugout("calcForce() - relm1,relm2 = dforce: "+mpmain.getSRTMass()+","+mpsec.getSRTMass()+" = "+dforce);
-		//debugout("calcForce() - mpsec: ID="+mpsec.id+", absmass="+mpsec.getAbsMass()+", absspeed="+mpsec.getSpeed());
-		//debugout("calcForce() - mpsec: vx="+mpsec.getMDVSpeed().x1+", absmass="+mpsec.getAbsMass()+", absspeed="+mpsec.getSpeed());
-
-		//debugout("calcForce() - Gravconst = "+GRAVCONST+","+(double)GRAVCONST+","+(float)GRAVCONST+","+(int)GRAVCONST+","+(long)GRAVCONST);
 
 		//mdvrquot calculated with MDVector because 'radius' is r / r^3
 		mdv mdvrquot(0);
-		//Converted from long (mm) to double (meter)
 		debugout("calcForce() - abs(mdvdist)=", abs(mdvdist), 5);
 		mdvrquot = mdvdist / abs(mdvdist);
 		debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
-		//mdvrquot = MVMath.DivMVNum(MVMath.ConvertToD(mlvdist), MVMath.ConvertToD(mlvdist).abs()); 	// vec r / |r|
-		//debugout(" Mdvrquot.abs,r1,r2,r3: "+mdvrquot.abs()+","+mdvrquot.x1+","+mdvrquot.x2+","+mdvrquot.x3);
 
 		//Force-Vector: combination of mdvrquot and dforce
 		mdv mdvforce(0);
 		mdvforce = mdvrquot * dforce;
 		debugout(" calcForce() - mdvforce: ", mdvforce, 5);
-		//debugout(" |mdvforce|,x1,x2,x3: "+mdvforce.abs()+","+mdvforce.x1+","+mdvforce.x2+","+mdvforce.x3);
 
 		//kraft von objekt i auf ref-objekt wird zu einer gesamt kraft addiert
 		mdvforcetotal += mdvforce;
 		debugout(" calcForce() - totalmvforce: ", mdvforcetotal, 5);
-		//debugout(" |mvforcetotal|,x1,x2,x3: "+mdvforcetotal.abs()+","+mdvforcetotal.x1+","+mdvforcetotal.x2+","+mdvforcetotal.x3);
 	}
-	//debugout("calcForce() - |mvforcesum|,x1,x2,x3: "+mdvforcetotal.abs()+","+mdvforcetotal.x1+","+mdvforcetotal.x2+","+mdvforcetotal.x3);
-
 	return ERROR_NONE;
 }
 
+/** 
+ * Calculcate the new position of the whole GravStep
+ *
+ * It loops through vmpinsert, uses calcForce() to calculate the force which acts
+ * on that object, calculates the (relat. corrected) acceleration and uses that value 
+ * to get its speed and its new position.<br>
+ * In the case that calcForce() returns ERROR_CALC_NAN, calcAcc cancels the calculation
+ * and returns NULL.
+ *
+ * @param vmpsinsert	The starting GravStep pointer for the calculation
+ * @param vmpsout	A GravStep pointer which will the result will be added to
+ * @return		GravStep *vmpsout if calculation successfully completed,
+ * 			NULL if the calculation failed.
+ */
 GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
-	//Vector<Masspoint> vmpsout = new Vector<Masspoint>();
+
 	debugout("calcAcc() - vmpsinsert Objectlist", vmpsinsert->objects, 5);
-	//TODO Fix? vmpsout.addAll(vmpsinsert);
-	//debugout("ID 0: Old Coords(x1,x2,x3): "+((Masspoint)masspoints.get(0)).mlvpos.x1+","+((Masspoint)masspoints.get(0)).mlvpos.x2+","+((Masspoint)masspoints.get(0)).mlvpos.x3);
-	//debugout("ID 1: Old Coords(x1,x2,x3): "+((Masspoint)masspoints.get(1)).mlvpos.x1+","+((Masspoint)masspoints.get(1)).mlvpos.x2+","+((Masspoint)masspoints.get(1)).mlvpos.x3);
+
 	//Berechnung der neuen Position f�r alle Objekte von ID 0 bis ID i
 	debugout("calcAcc() - Start() - dtime_step = ",dtime_step, 10);
-		
 	
 #ifdef _OPENMP
 	int numProcs = omp_get_num_procs();
@@ -119,23 +116,16 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		if(bkillloop)
 			FORKILLER;
 
-		//debugout("calcAcc() - for Schleife Start");
 		GravObject* mpold = (vmpsinsert->objects)[i];
 		GravObject* mpnew;
 		
 		#pragma omp critical
 		mpnew = vmpsout->addnew(mpold);
 
-		//debugout("calcAcc() - Object added",15);
-
 		debugout("calcAcc() - old (x,y,z)=",mpold->pos,5);
-		debugout("calcAcc() - ID: ", mpold->id, 5); //+": Old Coords(x1,x2,x3): "+mpold.mlvpos.x1+","+mpold.mlvpos.x2+","+mpold.mlvpos.x3);		
-
+		debugout("calcAcc() - ID: ", mpold->id, 5);
 
 		//Calculation of the whole force on object i
-
-		//JAVA
-		//MDVector mvforce = new MDVector(0,0,0);		
 		mdv mvforce(0);
 		int error = calcForce(mpold, vmpsinsert, mvforce);
 		if(error != ERROR_NONE) {
@@ -146,8 +136,6 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		}
 
 		debugout(" calcAcc() - totalmvforce: ", mvforce, 5);
-
-		//debugout(" |MVforcetotal|,x1,x2,x3: "+mvforce.abs()+","+mvforce.x1+","+mvforce.x2+","+mvforce.x3);
 
 		//relativistic acceleration formula
 		const long double dLightspeed2 = powx(LIGHTSPEED, 2);
@@ -191,7 +179,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 				}
 				dtime_step /= 10.0;
 #ifdef DEBUG
-				debugout("calcAcc() -  (c-v0)/a < dtime_step. Count=",count,5); // = ("+LIGHTSPEED+"-"+mpold.getSpeed()+")/"+mva.abs()+"="+(LIGHTSPEED - mpold.getSpeed()) / mva.abs()+"<"+dtime_step);			
+				debugout("calcAcc() -  (c-v0)/a < dtime_step. Count=",count,5);
 #endif
 			}
 			debugout("calcAcc() - dv+v0 > c => break. New dtime_step=", dtime_step, 10); //="+dtime_step);
@@ -259,10 +247,20 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		return NULL;
 
 	debugout("calcAcc() - vmpsout Objectlist", vmpsout->objects, 5);
-	debugout("calcAcc() - Finish", 5); //, size="+vmpsout.size());	
+	debugout("calcAcc() - Finish", 5);	
 	return vmpsout;
 }
 
+/**
+ * Lets two object collide (fully inelastic) into a bigger one
+ * 
+ * The code preserve both volume and impulse.
+ * It saves the resulting GravObject into mpsurvive
+ *
+ * @param mpsurvive	First GravObject *, will be used as result
+ * @param mpkill	Second GravObject *
+ * @return		GravObject * to mpsurvive
+ */
 GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	debugout("Collision() - starting", 10);
 
@@ -270,26 +268,14 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	long double dvolumekill = mpkill->getVolume();
 
 	long double dvolume = dvolumesurvive + dvolumekill; //die volumina (nicht die Radien!) werden addiert
-	//debugout("Collision! Object "); //+mpsurvive.id+" ("+mpsurvive.getVolume()+") and Object "+mpkill.id+"/kill ("+mpkill.getVolume()+") collided. New volume: "+dvolume);
 
 	//Berechnung des neuen Radius' aus dem Volumen
 	long double temp = 3.0 * dvolume;
 	temp /= 4.0 * PI;
 	long double dradius = pow(temp , (long double)(1.0/3.0));
 
-	temp = 0;
-	//double dradius = pow((3.0*dvolume)/(4.0*PI), (long double)(1.0/3.0));	
-	//V=4/3*r^3*PI --> r = 3.sqrtx(3*V/PI/4)
-	//std::cout << "Collision! Object " << mpsurvive->id << " (" << mpsurvive->getRadius() << ") and Object ";
-	//std::cout << mpkill->id << "/kill (" << mpkill->getRadius() << ") collided. New radius: " << dradius << std::endl;
-
 	//new momentum (=impuls)
 	mdv dmom_all = mpkill->getImpulse() + mpsurvive->getImpulse();
-
-	//JAVA
-	//MDVector mdvmoment1 = MVMath.ProMVNum(mpsurvive.getMDVSpeed(), mpsurvive.getSRTMass());	//momentum = gamma*absmass*speed
-	//MDVector mdvmoment2 = MVMath.ProMVNum(mpkill.getMDVSpeed(), mpkill.getSRTMass());	//momentum = gamma*absmass*speed
-	//MDVector mdvmoment = MVMath.AddMV(mdvmoment1, mdvmoment2);
 
 	long double dfactora = dmom_all * dmom_all; //(momentum1+momentum2)^2
 	/*
@@ -308,10 +294,6 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	mdv dspeed_all = dmom_all / dmass;
 	dspeed_all *= dgamma3;
 
-	//JAVA
-	//mpsecspeed = MVMath.DivMVNum(mdvmoment, dmass); 	//gesamtv = gesamtimpuls / gesamtmasse
-	//mpsecspeed = MVMath.ProMVNum(mpsecspeed, dgamma3);
-
 	//Object has position between the old centers
 	//(arithmetisches mittel der positionen)
 
@@ -323,22 +305,11 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 
 	long double dconst = (dvolumesurvive+dvolumekill) / 2.0;
 
-	//std::cout << " dconst =" << dconst << ", dvolumesurvive=" << dvolumesurvive << ", dvolumekill=" << dvolumekill << std::endl;
-
 	mlv llpos_surv = mpsurvive->pos * (dvolumesurvive/ dconst);
 	mlv llpos_kill = mpkill->pos * (dvolumekill / dconst);
 
-	//std::cout << " llpos_surv=" << llpos_surv << ", mpsurvive->pos =" << mpsurvive->pos << ", (dvolumesurvive/ dconst)=" << (double)(dvolumesurvive/ dconst) << std::endl;
-	//std::cout << " llpos_kill=" << llpos_kill << ", mpkill->pos =" << mpkill->pos << ", (dvolumekill/ dconst)=" << (double)(dvolumekill/ dconst) << std::endl;
-
 	llpos_surv += llpos_kill;
 	llpos_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
-
-	//JAVA
-	//MLVector mlvcoordsur = MVMath.ProMVNum(mpsurvive.getCoordMLV(), dvolumesurvive/dconst);
-	//MLVector mlvcoordkil = MVMath.ProMVNum(mpkill.getCoordMLV(), dvolumekill/dconst);
-	//MLVector mlvnewcoord = MVMath.AddMV(mlvcoordsur, mlvcoordkil);
-	//mlvnewcoord = MVMath.DivMVNum(mlvnewcoord, (dvolumesurvive+dvolumekill)/dconst);
 
 	mpsurvive->setCoord(llpos_surv);
 	mpsurvive->setMass(dmass);
@@ -349,6 +320,12 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	mpsurvive->setRadius(dradius);
 	return mpsurvive;
 }
+/**
+ * Checks all objects of a GravStep for collision
+ *
+ * @param pgs_insert	GravStep * which should be checked against
+ * @return		pointer to a new GravStep pgs_output
+ */
 GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 	GravStep* pgs_output = new GravStep();
 	debugout("collisionCheck() - Starting. number of objects to check: ", pgs_insert->numObjects, 7);
@@ -429,6 +406,13 @@ GravStep* calc::collisionCheck(GravStep* pgs_insert) {
 	return pgs_output;
 }
 
+/**
+ * Check if any object of a GravStep is faster than dpercenatage * c
+ *
+ * @param pgs_test	GravStep * which should be tested
+ * @param dpercentage	percentage of speed of light
+ * @return		true if there is an object, false if there is none
+ */
 bool calc::checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	//diese for-schleife dient nur daf�r, dass die berechnung exakt wird, falls ein objekt �ber dpercentage% c kommt
 	std::vector<GravObject*>::iterator i;
@@ -442,6 +426,21 @@ bool calc::checkSpeedBorder(GravStep* pgs_test, long double dpercentage) {
 	return false;
 }
 
+/**
+ * Handles the whole calculation
+ *
+ * Additionally the master checks for collision, finds new timesteps 
+ * if forces get too strong, saves percentage of calculation to file
+ * and saves GravStep to file.
+ *
+ * @param filename		file in which each GravStep will be saved
+ * @param pgs_start		starting GravStep
+ * @param dtime_max		total amount of time for calculation
+ * @param dtime_save		amount of time after a GravStep will be saved
+ * @param dtime_step_default	default time for each step
+ * @return			the bitset cerrors which contains information about all errors
+ * 
+ */
 std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_start, long double dtime_max, long double dtime_save, long double dtime_step_default) {
 
 	GravStep* pgs_current = NULL;
@@ -510,17 +509,7 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 		} else {
 			pgs_temp = new GravStep();
 			debugout("CalcCode() - temp==NULL, start==NULL - seems that new dt was found", 20);
-			//TODO Remove for final
-			if(pgs_current->numObjects <= 1) {
-				delete pgs_temp;
-				return cerrors;
-			}
 		}
-
-		//TODO remove!
-		//if((pgs_current->objects.front())->id > pgs_current->objects.back())->id) {
-		//	pgs_current->objects.reverseswap();
-		//}
 		
 		/* Check if one of the mps is faster then 80% of c.
 		 * Only required when checking for collsion! 
@@ -535,13 +524,6 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 			//TODO debugout("calcMain() - dtime_step <= exactstep: "+dtime_step+"<"+exactstep);
 		}
 
-		//Avoid major problems
-		/*		if(pgs_temp == NULL || pgs_temp->objects.size() <= 0) {
-		 debugout("calcMain() - vmps_current.size <= 0!");
-		 flagcalc = false;
-		 error = UNKNOWN;
-		 }
-		 */
 		debugout("CalcCode - Starting calcAcc", 7);
 		pgs_temp = calcAcc(pgs_current, pgs_temp);
 
@@ -557,7 +539,6 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 			debugout("calcMain() - dtime_sum >= lstep*dtime_save", 10);
 			pgs_temp->savetofile(ofs_temp, ++lstep);
 			//to be able to communicate with the frontend
-			//std::cout << "Step#"<< (int)(dtime_sum/dtime_save) << std::endl;
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
 				if(!savepercentage(FILE_PERCENT,++percent)) {
 					error::errors |= error::file_out;
@@ -565,9 +546,8 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 				}
 			}
 
-			//debugout("calcMain() - dtsum ="+dtsum+", Datacount="+datacount);
 			dtime_step = dtime_step_default; //reset to old step size
-			debugout("calcMain() - end, dtime_step = dtime_step_default = ", dtime_step, 10); // ="+dtime_step+"="+dtime_step_default);
+			debugout("calcMain() - end, dtime_step = dtime_step_default = ", dtime_step, 10);
 		} else
 			debugout("dtime_sum < lstep*dtime_save", 7);
 	}
@@ -587,6 +567,13 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 	return cerrors;
 }
 
+/**
+ * Saves the percentage of the calculation to file 
+ *
+ * @param file		The file the percentage will be saved to
+ * @param percent	the percentage as int
+ * @return		true if percentage could be saved, false otherwise
+ */
 bool calc::savepercentage(std::string file, int percent) {
 #ifdef DEBUG
 	std::cout << "Write Percent#"<< percent << " to " << (std::string)file << std::endl;
@@ -609,9 +596,3 @@ bool calc::savepercentage(std::string file, int percent) {
 	debugout("savepercentage() - Percentage successfully saved!", 41);
 	return true;
 }
-
-/*#ifdef DEBUG_INC_GRAVITY_CALCFUNC
-#efine DEBUG DEBUG_INC_GRAVITY_CALCFUNC
-#undef DEBUG_INC_GRAVITY_CALCFUNC
-#endif
-*/

@@ -24,6 +24,9 @@
 #define FLAG_NOCOLL1	"--disable-collision"
 #define	FLAG_NOCOLL2	"-C"
 
+#define	FLAG_QUIET1	"--quiet"
+#define	FLAG_QUIET2	"-q"
+
 /* General definitions */
 #define DATAPRECISION 20
 #define DELIMDATA ";"

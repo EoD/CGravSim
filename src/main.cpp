@@ -19,6 +19,7 @@ int main(int argc, char* pArgs[]) {
 	std::string filename;
 	GravDataSet* pgdsStart = new GravDataSet();
 	long double dtime_step_default = -1;
+	std::ofstream ofs_silent;
 
 	for(int i=1; i < argc ; i++) {
 		if( (std::string)pArgs[i] == FLAG_DEBUG1 || (std::string)pArgs[i] == FLAG_DEBUG2) {
@@ -32,14 +33,14 @@ int main(int argc, char* pArgs[]) {
 		} 
 		else if( (std::string)pArgs[i] == FLAG_HELP1 || (std::string)pArgs[i] == FLAG_HELP2) {
 			std::cout << "JGravSim Backend - a program to calculate gravitational effects with relativistic corrections" << std::endl;
-			std::cout << "USAGE: cgravsim [" << FLAG_HELP2 << " " << FLAG_DEBUG2 <<"] ["<< FLAG_TIME2 <<" TIMESTEP] [FILENAME]" << std::endl;
+			std::cout << "USAGE: cgravsim [" << FLAG_HELP2 << " " << FLAG_DEBUG2 << " " << FLAG_QUIET2 <<"] ["<< FLAG_TIME2 <<" TIMESTEP] [FILENAME]" << std::endl;
 			std::cout << "\t FILENAME has to be in the current WPT (v" << WPTVERSION << ") format" << std::endl;
 			std::cout << "Arguments:" << std::endl;
 			std::cout << "  " << FLAG_HELP2  << ", " << FLAG_HELP1  << "\t\tdisplay this help" << std::endl;
 			std::cout << "  " << FLAG_DEBUG2 << ", " << FLAG_DEBUG1 << "\t\tprint version of backend and expected frontend" << std::endl;
 			std::cout << "  " << FLAG_TIME2  << ", " << FLAG_TIME1  << "  \toverrides the timestep which is used for calculation" << std::endl;
 			std::cout << "  " << FLAG_NOCOLL2  << ", " << FLAG_NOCOLL1  << "\n\t\t\tDisables collision detection.\n\t\t\tBe aware that this may result in extremly small time steps during calculation!" << std::endl;
-			std::cout << std::endl << "Version : " << BVERSION << std::endl;
+			std::cout << "  " << FLAG_QUIET2  << ", " << FLAG_QUIET1  << "\t\tmutes stdout (shows preceding parameters)" << std::endl;
 #ifdef DEBUG
 			std::cout <<   "Debug   : " << DEBUG << std::endl;
 #endif
@@ -60,6 +61,38 @@ int main(int argc, char* pArgs[]) {
 #ifdef DEBUG
 			std::cout << "Collision detection has been disabled" << std::endl;
 #endif
+		}
+		else if((std::string)pArgs[i] == FLAG_QUIET1 || (std::string)pArgs[i] == FLAG_QUIET2) {
+			/* 
+			 * We are overwriting the streambuf of cout to go to a ofstream of /dev/null or NUL
+			 * depending on the OS. We never close the ofstream stream, as it will be closed on
+			 * exit().
+			 */
+			std::streambuf *psbuf;
+			ofs_silent.open("/dev/null");
+			bool silenced = false;
+			
+			if(!ofs_silent.is_open()) {
+#ifdef DEBUG
+				std::cout << "Could not open /dev/null" << std::endl;
+#endif
+				ofs_silent.open("NUL");
+				if(ofs_silent.is_open())
+					silenced = true;
+#ifdef DEBUG
+				else 
+					std::cerr << "Could not open /dev/null or NUL" << std::endl;
+#endif
+			} else
+				silenced = true;
+
+			if(silenced) {
+				psbuf = ofs_silent.rdbuf();
+				std::cout.rdbuf(psbuf);
+#ifdef DEBUG
+				std::cout << "stdout will be quiet." << std::endl;
+#endif
+			}
 		}
 		else {
 			filename = pArgs[i];

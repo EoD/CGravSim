@@ -7,8 +7,8 @@
 #endif
 
 /* Versions */
-#define BVERSION 0.9
-#define FVERSION 1.8
+#define BVERSION 1.0
+#define FVERSION 1.9
 #define WPTVERSION 2
 
 /* Command line arguments */

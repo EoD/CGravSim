@@ -303,10 +303,16 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	if (mpkill->getSchwarzschildRadius() > mpkill->getRadius())
 		dvolumekill = mpkill->getSchwarzschildVolume();
 
+	/* dconst is a constant which improves the numerical situation and is mathematically irrelevant */
 	long double dconst = (dvolumesurvive+dvolumekill) / 2.0;
 
-	mlv llpos_surv = mpsurvive->pos * (dvolumesurvive/ dconst);
-	mlv llpos_kill = mpkill->pos * (dvolumekill / dconst);
+	/* 
+	 * We get the new position by weighting the position by their volume.
+	 * 2*newpos = (x*Vx   + y*Vy   ) / (Vx + Vy)
+	 *   newpos = (x*Vx/2 + y*Vy/2 ) / (Vx + Vy)
+	 */
+	mlv llpos_surv = mpsurvive->pos * (dvolumesurvive/ (2.0*dconst));
+	mlv llpos_kill = mpkill->pos * (dvolumekill / (2.0*dconst));
 
 	llpos_surv += llpos_kill;
 	llpos_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);

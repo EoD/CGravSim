@@ -107,9 +107,10 @@ mdv GravObject::getImpulse() const {
 
 /** Returns the relativistic energy for the masspoint */
 long double GravObject::getEnergy() const {
+	/* E^2 = (m_0 *c^2)^2 + (pc)^2 */
 	long double Energy = mass * LIGHTSPEED * LIGHTSPEED;
 	Energy *= Energy;
-	Energy += LIGHTSPEED * LIGHTSPEED + (getImpulse() * getImpulse());
+	Energy += LIGHTSPEED * LIGHTSPEED * (getImpulse() * getImpulse());
 	return sqrt(Energy);
 }
 

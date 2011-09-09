@@ -292,24 +292,17 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	 */
 	const mdv dspeed_all = dmom_all * (LIGHTSPEED * LIGHTSPEED / (E1+E2));
 
-	//Object has position between the old centers
-	//(arithmetisches mittel der positionen)
+	/*
+	 * To calculate the new positions, we weight them by their "relativistic" 
+	 * mass (not the invariant mass!). See collision.pdf for details.
+	 */
+	const long double mass_surv = mpsurvive->getSRTMass();
+	const long double mass_kill = mpkill->getSRTMass();
 
-	if (mpsurvive->getSchwarzschildRadius() > mpsurvive->getRadius())
-		dvolumesurvive = mpsurvive->getSchwarzschildVolume();
+	const mlv llpos_surv = mpsurvive->pos * ( mass_surv / (mass_surv + mass_kill) );
+	const mlv llpos_kill = mpkill->pos * ( mass_kill / (mass_surv + mass_kill) );
 
-	if (mpkill->getSchwarzschildRadius() > mpkill->getRadius())
-		dvolumekill = mpkill->getSchwarzschildVolume();
-
-	long double dconst = (dvolumesurvive+dvolumekill) / 2.0;
-
-	mlv llpos_surv = mpsurvive->pos * (dvolumesurvive/ dconst);
-	mlv llpos_kill = mpkill->pos * (dvolumekill / dconst);
-
-	llpos_surv += llpos_kill;
-	llpos_surv /= (long long)((dvolumesurvive+dvolumekill)/dconst);
-
-	mpsurvive->setCoord(llpos_surv);
+	mpsurvive->setCoord(llpos_surv+llpos_kill);
 	mpsurvive->setMass(dmass);
 	if (!mpsurvive->setSpeed(dspeed_all)) {
 		//TODO FIX myController.flagcalc = false;

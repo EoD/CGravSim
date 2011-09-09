@@ -285,14 +285,12 @@ GravObject* calc::collision(GravObject* mpsurvive, GravObject* mpkill) {
 	long double E1 = mpsurvive->getEnergy(), E2 = mpkill->getEnergy();
 	long double dmass = sqrt( (E1+E2)*(E1+E2) / (LIGHTSPEED*LIGHTSPEED) - dfactora) / LIGHTSPEED;
 	
-	long double dgamma3;
-	dgamma3 = LIGHTSPEED*LIGHTSPEED*powx(dmass, 2);
-	dgamma3 += dfactora;
-	dgamma3 = dfactora / dgamma3;
-	dgamma3 = sqrtx((long double)1.0 - dgamma3);
-
-	mdv dspeed_all = dmom_all / dmass;
-	dspeed_all *= dgamma3;
+	/*
+	 * It's pretty easy to calculate the speed of the center of mass
+	 * of those two objects with E=mc^2 and p=mv =>  v = E/c^2
+	 * m is in both cases m_0*gamma.
+	 */
+	const mdv dspeed_all = dmom_all * (LIGHTSPEED * LIGHTSPEED / (E1+E2));
 
 	//Object has position between the old centers
 	//(arithmetisches mittel der positionen)

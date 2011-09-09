@@ -124,7 +124,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\cgravsimdbg_x64.exe"
+				OutputFile="$(OutDir)\cgravsimdbg_amd64.exe"
 				GenerateDebugInformation="true"
 			/>
 			<Tool
@@ -249,7 +249,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\cgravsim_x64.exe"
+				OutputFile="$(OutDir)\cgravsim_amd64.exe"
 			/>
 			<Tool
 				Name="VCALinkTool"

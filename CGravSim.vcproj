@@ -46,6 +46,7 @@
 				RuntimeLibrary="1"
 				OpenMP="false"
 				WarningLevel="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -59,6 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\cgravsimdbg_x86.exe"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -109,6 +111,7 @@
 				RuntimeLibrary="1"
 				OpenMP="false"
 				WarningLevel="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -122,6 +125,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\cgravsimdbg_x64.exe"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

@@ -437,7 +437,7 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 	GravStep* pgs_current = NULL;
 	GravStep* pgs_temp = NULL;
 	long double dtime_sum = 0;
-	unsigned int lstep = 0;
+	unsigned int lstep = 1;
 	/*long double*/dtime_step = dtime_step_default;
 	long double dtime_exactstep = dtime_step/powx(10.0, 3);
 	cerrors.reset();
@@ -528,7 +528,7 @@ std::bitset<ERROR_CALC_MAX> calc::master(std::string filename, GravStep* pgs_sta
 
 		if (dtime_sum >= lstep*dtime_save) {
 			debugout("calcMain() - dtime_sum >= lstep*dtime_save", 10);
-			pgs_temp->savetofile(ofs_temp, ++lstep);
+			pgs_temp->savetofile(ofs_temp, lstep++);
 			//to be able to communicate with the frontend
 			if((dtime_sum*100.0)/dtime_max > percent+1) {
 				if(!savepercentage(FILE_PERCENT,++percent)) {

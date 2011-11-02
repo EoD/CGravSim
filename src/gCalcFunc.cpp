@@ -19,65 +19,74 @@ bool calc::flag_collision = true;
  * Calculcate the force between reference object and all the other 
  * objects in the GravStep
  *
- * @param mpmain	pointer to the reference object
  * @param vmpsinsert	GravStep* which we calculate against
- * @param mdvforcetotal	mdv& the resulting total force for that object
+ * @param mdv_forces	vector<mdv>& the resulting total force vector of all objects
  * @return		the error value (ERROR_NONE or ERROR_CALC_NAN)
  */
-int calc::calcForce(GravObject* mpmain, GravStep* vmpsinsert, mdv& mdvforcetotal) {
-	mdvforcetotal = mdv(0);
+int calc::calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
+	
+	//we don't need to iterate over the last element as it doesn't exert any force on itself
+	for (std::vector<GravObject*>::size_type i = 0; i < vmpsinsert->objects.size()-1; i++) {
+		GravObject* mpmain = vmpsinsert->objects[i];
+		debugout("calcForce() - START ID: ",mpmain->id,5);
 
-	debugout("calcForce() - START ID: ",mpmain->id,5);
-	std::vector<GravObject*>::reverse_iterator i;
-	for (i= vmpsinsert->objects.rbegin(); i != vmpsinsert->objects.rend(); ++i) {
-		GravObject* mpsec = (*i);
-		debugout("calcForce() -  START secID: ",mpsec->id,5);
+		//we iterate only over all elements which follow element i
+		for (std::vector<GravObject*>::size_type j = i+1; j < vmpsinsert->objects.size(); j++) {
+			GravObject* mpsec = vmpsinsert->objects[j];
+			debugout("calcForce() -  START secID: ",mpsec->id,5);
 
-		//Objekt wechselwirkt nicht mit sich selbst (nicht hier!)
-		if (mpmain->id == mpsec->id) {
-			continue;
+			//Objekt wechselwirkt nicht mit sich selbst (nicht hier!)
+			if (mpmain->id == mpsec->id) {
+				continue;
+			}
+
+			//distance between objects
+			const mlv mlvdist = mpsec->pos - mpmain->pos;
+			//Converted from long (mm) to double (meter)
+			const mdv mdvdist = mlvdist;
+			debugout("calcForce() - mlvdist=", mlvdist, 5);
+
+			//halb-relativistische Gravitations-Kraftberechnung
+			//(in mehrere Einzelschritt zerlegt)
+
+			//absolute newtonian force
+			long double dforce = 0.0; // |Fg| = m1*m2*G/(pos2-pos1)^2
+			dforce = mpmain->getSRTMass();
+			debugout("calcForce() - dforce1=", dforce, 5);
+			dforce *= mpsec->getSRTMass();
+			debugout("calcForce() - dforce2=", dforce, 5);
+			dforce *= GRAVCONST;
+			debugout("calcForce() - dforce3=", dforce, 5);
+			dforce /= mdvdist * mdvdist;
+			debugout("calcForce() - dforce4=", dforce, 5);
+
+			if (isnan(dforce)) {
+				debugout("calcForce() - dforce is NaN - ERROR", 99);
+				return ERROR_CALC_NAN;
+			}
+
+			//mdvrquot calculated with MDVector because 'radius' is r / r^3
+			mdv mdvrquot(0);
+			debugout("calcForce() - abs(mdvdist)=", abs(mdvdist), 5);
+			mdvrquot = mdvdist / abs(mdvdist);
+			debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
+
+			//Force-Vector: combination of mdvrquot and dforce
+			mdv mdvforce(0);
+			mdvforce = mdvrquot * dforce;
+			debugout(" calcForce() - mdvforce: ", mdvforce, 5);
+
+			// force goes from main-mp (i) to sec-mp (j) and negative force goes the other way round 
+			mdv_forces[i] += mdvforce;
+			mdv_forces[j] -= mdvforce;
 		}
-
-		//distance between objects
-		const mlv mlvdist = mpsec->pos - mpmain->pos;
-		//Converted from long (mm) to double (meter)
-		const mdv mdvdist = mlvdist;
-		debugout("calcForce() - mlvdist=", mlvdist, 5);
-
-		//halb-relativistische Gravitations-Kraftberechnung
-		//(in mehrere Einzelschritt zerlegt)
-
-		//absolute newtonian force
-		long double dforce = 0.0; // |Fg| = m1*m2*G/(pos2-pos1)^2
-		dforce = mpmain->getSRTMass();
-		debugout("calcForce() - dforce1=", dforce, 5);
-		dforce *= mpsec->getSRTMass();
-		debugout("calcForce() - dforce2=", dforce, 5);
-		dforce *= GRAVCONST;
-		debugout("calcForce() - dforce3=", dforce, 5);
-		dforce /= mdvdist * mdvdist;
-		debugout("calcForce() - dforce4=", dforce, 5);
-
-		if (isnan(dforce)) {
-			debugout("calcForce() - dforce is NaN - ERROR", 99);
-			return ERROR_CALC_NAN;
-		}
-
-		//mdvrquot calculated with MDVector because 'radius' is r / r^3
-		mdv mdvrquot(0);
-		debugout("calcForce() - abs(mdvdist)=", abs(mdvdist), 5);
-		mdvrquot = mdvdist / abs(mdvdist);
-		debugout(" calcForce() - mdvrquot: ", mdvrquot, 5);
-
-		//Force-Vector: combination of mdvrquot and dforce
-		mdv mdvforce(0);
-		mdvforce = mdvrquot * dforce;
-		debugout(" calcForce() - mdvforce: ", mdvforce, 5);
-
-		//kraft von objekt i auf ref-objekt wird zu einer gesamt kraft addiert
-		mdvforcetotal += mdvforce;
-		debugout(" calcForce() - totalmvforce: ", mdvforcetotal, 5);
 	}
+#ifdef DEBUG
+	std::vector<mdv>::iterator k;
+	debugout("calcForce() - totalmvforce of objects: ", (int)mdv_forces.size(), 5);
+	for (k= mdv_forces.begin(); k != mdv_forces.end(); ++k)
+		debugout("calcForce() - totalmvforce: ", *k, 5);
+#endif
 	return ERROR_NONE;
 }
 
@@ -108,6 +117,17 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 #endif
 	bool bkillloop = false;
 
+	//initialize a mdv-vector with size of vmpsinsert and starting value mdv(0)
+	std::vector<mdv> mdv_forces (vmpsinsert->numObjects, 0);
+	
+	//WARNING NOT READY YET! WE SHOULD CHECK FOR OBJECTLISTS WITH IDs="2,7,8" . THIS LEADS TO A SEGFAULT
+	int error = calcForce(vmpsinsert, mdv_forces);
+	if(error != ERROR_NONE) {
+		flagcalc = false;
+		cerrors |= ERROR_TO_BITSET(error);
+		return NULL;
+	}
+	
 	#pragma omp parallel for                                                                                  
 	for (std::vector<GravObject*>::size_type i = 0; i < vmpsinsert->objects.size() ; i++) {
 
@@ -126,15 +146,7 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 		debugout("calcAcc() - ID: ", mpold->id, 5);
 
 		//Calculation of the whole force on object i
-		mdv mvforce(0);
-		int error = calcForce(mpold, vmpsinsert, mvforce);
-		if(error != ERROR_NONE) {
-			flagcalc = false;
-			bkillloop = true;
-			cerrors |= ERROR_TO_BITSET(error);
-			FORKILLER;
-		}
-
+		const mdv mvforce = mdv_forces[i];
 		debugout(" calcAcc() - totalmvforce: ", mvforce, 5);
 
 		//relativistic acceleration formula

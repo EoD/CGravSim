@@ -94,6 +94,14 @@ template <typename T> mv<T>& operator+=(mv<T>& mv1, const mv<T>& mv2) {
 	mv1.x += mv2.x;	mv1.y += mv2.y;	mv1.z += mv2.z;
 	return mv1;
 }
+template <typename T> mv<T>& operator-=(mv<T>& mv1, const mv<T>& mv2) {
+	mv1.x -= mv2.x;	mv1.y -= mv2.y;	mv1.z -= mv2.z;
+	return mv1;
+}
+
+template <typename T> mv<T> operator-(const mv<T>& mv1) {
+	return mv<T>(-mv1.x, -mv1.y, -mv1.z); 
+}
 
 template <typename T> std::ostream& operator<<(std::ostream& stream, const mv<T>& mv1) {
 	stream << "(" << mv1.x << ", " << mv1.y << ", " << mv1.z << ")";

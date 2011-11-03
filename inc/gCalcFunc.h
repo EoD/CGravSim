@@ -23,7 +23,7 @@ namespace calc {
 	extern long double dtime_step;
 	extern bool flag_collision;
 	
-	int calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces);
+	int calcForces(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces);
 	GravStep* calcAcc(GravStep* vmpsinsert, GravStep* vmpsout);
 	GravObject* collision(GravObject* mpsurvive, GravObject* mpkill);
 	GravStep* collisionCheck(GravStep* pgs_insert);

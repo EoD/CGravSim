@@ -23,22 +23,23 @@ bool calc::flag_collision = true;
  * @param mdv_forces	vector<mdv>& the resulting total force vector of all objects
  * @return		the error value (ERROR_NONE or ERROR_CALC_NAN)
  */
-int calc::calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
+int calc::calcForces(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
+	bool errors = false;
 	
 	//we don't need to iterate over the last element as it doesn't exert any force on itself
+	#pragma omp parallel for                                                                                  
 	for (std::vector<GravObject*>::size_type i = 0; i < vmpsinsert->objects.size()-1; i++) {
+		if(errors)
+			FORKILLER;
+
 		GravObject* mpmain = vmpsinsert->objects[i];
 		debugout("calcForce() - START ID: ",mpmain->id,5);
 
 		//we iterate only over all elements which follow element i
+		#pragma omp parallel for                                                                                  
 		for (std::vector<GravObject*>::size_type j = i+1; j < vmpsinsert->objects.size(); j++) {
 			GravObject* mpsec = vmpsinsert->objects[j];
 			debugout("calcForce() -  START secID: ",mpsec->id,5);
-
-			//Objekt wechselwirkt nicht mit sich selbst (nicht hier!)
-			if (mpmain->id == mpsec->id) {
-				continue;
-			}
 
 			//distance between objects
 			const mlv mlvdist = mpsec->pos - mpmain->pos;
@@ -62,9 +63,12 @@ int calc::calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
 
 			if (isnan(dforce)) {
 				debugout("calcForce() - dforce is NaN - ERROR", 99);
-				return ERROR_CALC_NAN;
+				cerrors |= ERROR_TO_BITSET(ERROR_CALC_NAN);
+				#pragma omp critical (calcForces_errors)
+				errors = true;
+				FORKILLER;
 			}
-
+	
 			//mdvrquot calculated with MDVector because 'radius' is r / r^3
 			mdv mdvrquot(0);
 			debugout("calcForce() - abs(mdvdist)=", abs(mdvdist), 5);
@@ -77,8 +81,11 @@ int calc::calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
 			debugout(" calcForce() - mdvforce: ", mdvforce, 5);
 
 			// force goes from main-mp (i) to sec-mp (j) and negative force goes the other way round 
-			mdv_forces[i] += mdvforce;
-			mdv_forces[j] -= mdvforce;
+			#pragma omp critical (calcForces_sumup)
+			{
+				mdv_forces[i] += mdvforce;
+				mdv_forces[j] -= mdvforce;
+			}
 		}
 	}
 #ifdef DEBUG
@@ -87,7 +94,10 @@ int calc::calcForce(GravStep* vmpsinsert, std::vector<mdv>& mdv_forces) {
 	for (k= mdv_forces.begin(); k != mdv_forces.end(); ++k)
 		debugout("calcForce() - totalmvforce: ", *k, 5);
 #endif
-	return ERROR_NONE;
+	if(!errors)
+		return ERROR_NONE;
+	else
+		return ERROR_CALC_NAN;
 }
 
 /** 
@@ -120,11 +130,8 @@ GravStep* calc::calcAcc(GravStep* vmpsinsert, GravStep* vmpsout) {
 	//initialize a mdv-vector with size of vmpsinsert and starting value mdv(0)
 	std::vector<mdv> mdv_forces (vmpsinsert->numObjects, 0);
 	
-	//WARNING NOT READY YET! WE SHOULD CHECK FOR OBJECTLISTS WITH IDs="2,7,8" . THIS LEADS TO A SEGFAULT
-	int error = calcForce(vmpsinsert, mdv_forces);
-	if(error != ERROR_NONE) {
+	if(calcForces(vmpsinsert, mdv_forces) != ERROR_NONE) {
 		flagcalc = false;
-		cerrors |= ERROR_TO_BITSET(error);
 		return NULL;
 	}
 	
